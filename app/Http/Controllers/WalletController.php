@@ -9,6 +9,7 @@ use App\Http\Resources\WalletResource;
 use App\Models\Wallet;
 use Error;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class WalletController extends Controller
 {
@@ -17,7 +18,7 @@ class WalletController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Wallets/Page');
     }
 
     /**

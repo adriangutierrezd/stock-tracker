@@ -21,9 +21,12 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
-    Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');
-    Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
+    Route::get('/wallets', [WalletController::class, 'index'])->name('wallets.index');
 
+    Route::prefix('/api')->group(function(){
+        Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');
+        Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
+    });
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
