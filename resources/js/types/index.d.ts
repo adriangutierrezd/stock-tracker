@@ -20,6 +20,7 @@ export type WalletIconType = 'GROWING' | 'DIVERSIFIED' | 'RISK' | 'CARROT' | 'JO
 export interface Wallet {
     id: number;
     name: string;
+    userId: number;
     description: string;
-    logo: WalletIconType
+    icon: WalletIconType
 }

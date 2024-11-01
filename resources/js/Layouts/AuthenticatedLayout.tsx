@@ -1,12 +1,8 @@
 import { AppSidebar } from '@/Components/app-sidebar';
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { ThemeToggle } from '@/Components/ThemeToggle';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { Link, usePage } from '@inertiajs/react';
-import { PropsWithChildren, ReactNode, useState } from 'react';
+import { SidebarProvider, SidebarTrigger } from '@/Components/ui/sidebar';
+import { PropsWithChildren, ReactNode } from 'react';
+import { Toaster } from "@/Components/ui/toaster"
 
 // export default function Authenticated({
 //     header,
@@ -192,6 +188,7 @@ export default function Authenticated({ children, header }: PropsWithChildren<{ 
             <ThemeToggle/>
           </div>
           {children}
+          <Toaster />
         </main>
       </SidebarProvider>
     )

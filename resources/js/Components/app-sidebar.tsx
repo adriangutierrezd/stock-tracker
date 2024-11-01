@@ -19,28 +19,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { usePage } from "@inertiajs/react"
-import { Wallet } from "@/types"
-
-const wallets: Wallet[] = [
-  {
-    id: 1,
-    name: "Pennys 1",
-    description: "Road to 20K",
-    logo: 'CARROT'
-  },
-  {
-    id: 2,
-    name: "Pennys 2",
-    description: "Road to 5K",
-    logo: 'DIVERSIFIED'
-  },
-  {
-    id: 3,
-    name: "Main Wallet",
-    description: "Long term",
-    logo: 'JOYSTICK'
-  }
-]
 
 // This is sample data.
 const data = {
@@ -140,7 +118,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <WalletSwitcher wallets={wallets} />
+        <WalletSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

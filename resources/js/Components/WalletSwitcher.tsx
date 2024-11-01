@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ChevronsUpDown, Plus } from "lucide-react"
+import { ChevronsUpDown } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,47 +15,15 @@ import {
   useSidebar,
 } from "@/Components/ui/sidebar"
 import { Wallet, WalletIconType } from "@/types"
-import { useActiveWalletStore } from "@/stores"
+import { useActiveWalletStore, useWalletsStore } from "@/stores"
 import { WALLET_ICON_CONVERSION } from "@/constants"
-
-import { Button } from "@/Components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/Components/ui/dialog"
-import { Input } from "./ui/input"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/Components/ui/form"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/Components/ui/select"
+import NewWalletDialog from "./NewWalletDialog";
 
 
-export function WalletSwitcher({
-  wallets,
-}: {
-  readonly wallets: Wallet[]
-}) {
+export function WalletSwitcher() {
 
   const { isMobile } = useSidebar()
+  const { wallets } = useWalletsStore()
   const { activeWallet, setActiveWallet } = useActiveWalletStore()
 
   React.useEffect(() => {
@@ -64,7 +32,7 @@ export function WalletSwitcher({
     }
   }, [activeWallet, wallets, setActiveWallet])
 
-  const ActiveIconComponent = activeWallet ? WALLET_ICON_CONVERSION[activeWallet.logo as WalletIconType] : null;
+  const ActiveIconComponent = activeWallet ? WALLET_ICON_CONVERSION[activeWallet.icon as WalletIconType] : null;
 
   return (
     <SidebarMenu>
@@ -91,7 +59,6 @@ export function WalletSwitcher({
                   <ChevronsUpDown className="ml-auto" />
                 </>
               ) : (
-                // Render opcional o mensaje cuando activeWallet es null
                 <div className="flex justify-between items-center w-full">
                   <span className="truncate font-semibold">Selecciona una cartera</span>
                   <ChevronsUpDown className="ml-auto h-4 w-4" />
@@ -109,7 +76,7 @@ export function WalletSwitcher({
               Wallets
             </DropdownMenuLabel>
             {wallets.map((wallet: Wallet) => {
-              const WalletIcon = WALLET_ICON_CONVERSION[wallet.logo as WalletIconType]
+              const WalletIcon = WALLET_ICON_CONVERSION[wallet.icon as WalletIconType]
               return (
                 <DropdownMenuItem
                   key={wallet.id}
@@ -125,114 +92,11 @@ export function WalletSwitcher({
             })}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2" asChild>
-              <DialogDemo />
+              <NewWalletDialog />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
-}
-
-const DialogDemo = () => {
-
-  const formSchema = z.object({
-    name: z.string().min(2).max(15),
-    description: z.string().optional(),
-    logo: z.string().min(2).max(15)
-  })
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: undefined,
-      description: undefined,
-      logo: 'GROWING'
-    },
-  })
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-  }
-
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="w-full flex items-center">
-          <Plus className="size-4" />
-          Nueva cartera
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Detalles de la cartera</DialogTitle>
-          <DialogDescription>
-            Puedes crear una nueva cartera de inversión independiente de las que ya tienes registradas.
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="flex items-center gap-2">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="flex-1">
-                  <FormLabel>Nombre</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-              <FormField
-                control={form.control}
-                name="logo"
-                render={({ field }) => (
-                  <FormItem className="self-end">
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="w-[30px]">
-                        {Object.keys(WALLET_ICON_CONVERSION).map((key) => {
-                          const Icon = WALLET_ICON_CONVERSION[key as WalletIconType]
-                          return (
-                            <SelectItem key={key} value={key}>
-                              <Icon className="h-4 w-4" />
-                            </SelectItem>
-                          )
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descripción</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
-              <Button type="submit">Guardar</Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
   )
 }
