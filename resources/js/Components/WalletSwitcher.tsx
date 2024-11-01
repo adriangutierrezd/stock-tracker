@@ -18,12 +18,13 @@ import { Wallet, WalletIconType } from "@/types"
 import { useActiveWalletStore, useWalletsStore } from "@/stores"
 import { WALLET_ICON_CONVERSION } from "@/constants"
 import NewWalletDialog from "./NewWalletDialog";
+import axios from "axios"
 
 
 export function WalletSwitcher() {
 
   const { isMobile } = useSidebar()
-  const { wallets } = useWalletsStore()
+  const { wallets, setWallets } = useWalletsStore()
   const { activeWallet, setActiveWallet } = useActiveWalletStore()
 
   React.useEffect(() => {
@@ -31,6 +32,15 @@ export function WalletSwitcher() {
       setActiveWallet(wallets[0])
     }
   }, [activeWallet, wallets, setActiveWallet])
+
+  React.useEffect(() => {
+    reloadWallets()
+  }, [])
+
+  const reloadWallets = async () => {
+    const response = await axios.get(route('wallets.get'))
+    setWallets(response.data.data)
+  }
 
   const ActiveIconComponent = activeWallet ? WALLET_ICON_CONVERSION[activeWallet.icon as WalletIconType] : null;
 

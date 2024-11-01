@@ -21,6 +21,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
+    Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');
     Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
 
 

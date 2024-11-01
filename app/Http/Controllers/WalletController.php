@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreWalletRequest;
 use App\Http\Requests\UpdateWalletRequest;
+use App\Http\Resources\WalletCollection;
 use App\Http\Resources\WalletResource;
 use App\Models\Wallet;
 use Error;
+use Illuminate\Http\Request;
 
 class WalletController extends Controller
 {
@@ -80,5 +82,22 @@ class WalletController extends Controller
     public function destroy(Wallet $wallet)
     {
         //
+    }
+
+
+    public function getWallets(Request $request){
+        try{
+
+            $wallets = Wallet::where('user_id', $request->user()->id)->get();
+
+            return response()->json([
+                'message' => 'Carteras obtenidas con éxito',
+                'data' => new WalletCollection($wallets)
+            ], 200);
+        }catch(Error $e){
+            return response()->json([
+                'message' => 'Ha ocurrido un error inesperado'
+            ], 500);
+        }
     }
 }
