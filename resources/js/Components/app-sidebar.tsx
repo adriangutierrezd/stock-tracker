@@ -24,19 +24,23 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { usePage } from "@inertiajs/react"
+import { Wallet } from "@/types"
 
-const wallets = [
+const wallets: Wallet[] = [
   {
+    id: 1,
     name: "Pennys 1",
     description: "Road to 20K",
     logo: GalleryVerticalEnd
   },
   {
+    id: 2,
     name: "Pennys 2",
     description: "Road to 5K",
     logo: GalleryVerticalEnd
   },
   {
+    id: 3,
     name: "Main Wallet",
     description: "Long term",
     logo: AudioWaveform

@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface User {
     id: number;
     name: string;
@@ -12,3 +14,10 @@ export type PageProps<
         user: User;
     };
 };
+
+export interface Wallet {
+    id: number;
+    name: string;
+    description: string;
+    logo: React.Element;
+}

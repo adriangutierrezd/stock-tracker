@@ -16,20 +16,22 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Wallet } from "@/types"
+import { useActiveWalletStore } from "@/stores"
 
 export function WalletSwitcher({
   wallets,
 }: {
-  wallets: {
-    name: string
-    logo: React.ElementType
-    description: string
-  }[]
-}) {
-
+  wallets: Wallet[]}) {
 
   const { isMobile } = useSidebar()
-  const [activeWallet, setActiveWallet] = React.useState(wallets[0])
+  const {activeWallet, setActiveWallet } = useActiveWalletStore()
+
+  React.useEffect(() => {
+    if (!activeWallet && wallets.length > 0) {
+      setActiveWallet(wallets[0])
+    }
+  }, [activeWallet, wallets, setActiveWallet])
 
   return (
     <SidebarMenu>
@@ -40,16 +42,24 @@ export function WalletSwitcher({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <activeWallet.logo className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {activeWallet.name}
-                </span>
-                <span className="truncate text-xs">{activeWallet.description}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto" />
+              {activeWallet ? (
+                <>
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    <activeWallet.logo className="size-4" />
+                  </div>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">
+                      {activeWallet.name}
+                    </span>
+                    <span className="truncate text-xs">{activeWallet.description}</span>
+                  </div>
+                </>
+              ) : (
+                // Render opcional o mensaje cuando activeWallet es null
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">Selecciona una cartera</span>
+                </div>
+              )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -61,17 +71,17 @@ export function WalletSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Wallets
             </DropdownMenuLabel>
-            {wallets.map((wallet, index) => (
+            {wallets.map((w) => (
               <DropdownMenuItem
-                key={wallet.name}
-                onClick={() => setActiveWallet(wallet)}
+                key={w.id}
+                onClick={() => setActiveWallet(w)}
                 className="gap-2 p-2"
               >
                 <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <wallet.logo className="size-4 shrink-0" />
+                  <w.logo className="size-4 shrink-0" />
                 </div>
-                {wallet.name}
-                <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+                {w.name}
+                {/* <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut> */}
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
