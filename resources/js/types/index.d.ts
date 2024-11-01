@@ -15,9 +15,11 @@ export type PageProps<
     };
 };
 
+export type WalletIconType = 'GROWING' | 'DIVERSIFIED' | 'RISK' | 'CARROT' | 'JOYSTICK';
+
 export interface Wallet {
     id: number;
     name: string;
     description: string;
-    logo: React.Element;
+    logo: WalletIconType
 }

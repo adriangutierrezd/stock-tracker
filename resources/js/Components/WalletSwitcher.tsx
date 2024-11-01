@@ -1,37 +1,40 @@
 import * as React from "react"
 import { ChevronsUpDown, Plus } from "lucide-react"
-
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/Components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { Wallet } from "@/types"
+} from "@/Components/ui/sidebar"
+import { Wallet, WalletIconType } from "@/types"
 import { useActiveWalletStore } from "@/stores"
+import { WALLET_ICON_CONVERSION } from "@/constants"
+
 
 export function WalletSwitcher({
   wallets,
 }: {
-  wallets: Wallet[]}) {
+  readonly wallets: Wallet[]
+}) {
 
   const { isMobile } = useSidebar()
-  const {activeWallet, setActiveWallet } = useActiveWalletStore()
+  const { activeWallet, setActiveWallet } = useActiveWalletStore()
 
   React.useEffect(() => {
     if (!activeWallet && wallets.length > 0) {
       setActiveWallet(wallets[0])
     }
   }, [activeWallet, wallets, setActiveWallet])
+
+  const ActiveIconComponent = activeWallet ? WALLET_ICON_CONVERSION[activeWallet.logo as WalletIconType] : null;
 
   return (
     <SidebarMenu>
@@ -45,7 +48,9 @@ export function WalletSwitcher({
               {activeWallet ? (
                 <>
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <activeWallet.logo className="size-4" />
+                    {ActiveIconComponent && (
+                      <ActiveIconComponent className='h-4 w-4' />
+                    )}
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
@@ -53,11 +58,13 @@ export function WalletSwitcher({
                     </span>
                     <span className="truncate text-xs">{activeWallet.description}</span>
                   </div>
+                  <ChevronsUpDown className="ml-auto" />
                 </>
               ) : (
                 // Render opcional o mensaje cuando activeWallet es null
-                <div className="grid flex-1 text-left text-sm leading-tight">
+                <div className="flex justify-between items-center w-full">
                   <span className="truncate font-semibold">Selecciona una cartera</span>
+                  <ChevronsUpDown className="ml-auto h-4 w-4" />
                 </div>
               )}
             </SidebarMenuButton>
@@ -71,19 +78,21 @@ export function WalletSwitcher({
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Wallets
             </DropdownMenuLabel>
-            {wallets.map((w) => (
-              <DropdownMenuItem
-                key={w.id}
-                onClick={() => setActiveWallet(w)}
-                className="gap-2 p-2"
-              >
-                <div className="flex size-6 items-center justify-center rounded-sm border">
-                  <w.logo className="size-4 shrink-0" />
-                </div>
-                {w.name}
-                {/* <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut> */}
-              </DropdownMenuItem>
-            ))}
+            {wallets.map((wallet: Wallet) => {
+              const WalletIcon = WALLET_ICON_CONVERSION[wallet.logo as WalletIconType]
+              return (
+                <DropdownMenuItem
+                  key={wallet.id}
+                  onClick={() => setActiveWallet(wallet)}
+                  className="gap-2 p-2"
+                >
+                  <div className="flex size-6 items-center justify-center rounded-sm border">
+                    <WalletIcon className="size-4 shrink-0" />
+                  </div>
+                  {wallet.name}
+                </DropdownMenuItem>
+              )
+            })}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2">
               <div className="flex size-6 items-center justify-center rounded-md border bg-background">

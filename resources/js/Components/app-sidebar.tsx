@@ -3,17 +3,12 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
-  Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
   Settings2,
   SquareTerminal,
 } from "lucide-react"
 
 import { NavMain } from "@/Components/nav-main"
-import { NavProjects } from "@/Components/nav-projects"
 import { NavUser } from "@/Components/nav-user"
 import { WalletSwitcher } from "@/Components/WalletSwitcher"
 import {
@@ -31,19 +26,19 @@ const wallets: Wallet[] = [
     id: 1,
     name: "Pennys 1",
     description: "Road to 20K",
-    logo: GalleryVerticalEnd
+    logo: 'CARROT'
   },
   {
     id: 2,
     name: "Pennys 2",
     description: "Road to 5K",
-    logo: GalleryVerticalEnd
+    logo: 'DIVERSIFIED'
   },
   {
     id: 3,
     name: "Main Wallet",
     description: "Long term",
-    logo: AudioWaveform
+    logo: 'JOYSTICK'
   }
 ]
 
