@@ -18,6 +18,36 @@ import { Wallet, WalletIconType } from "@/types"
 import { useActiveWalletStore } from "@/stores"
 import { WALLET_ICON_CONVERSION } from "@/constants"
 
+import { Button } from "@/Components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/Components/ui/dialog"
+import { Input } from "./ui/input"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/Components/ui/form"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/Components/ui/select"
+
 
 export function WalletSwitcher({
   wallets,
@@ -94,15 +124,115 @@ export function WalletSwitcher({
               )
             })}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
-                <Plus className="size-4" />
-              </div>
-              <div className="font-medium text-muted-foreground">Nueva cartera</div>
+            <DropdownMenuItem className="gap-2 p-2" asChild>
+              <DialogDemo />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
+  )
+}
+
+const DialogDemo = () => {
+
+  const formSchema = z.object({
+    name: z.string().min(2).max(15),
+    description: z.string().optional(),
+    logo: z.string().min(2).max(15)
+  })
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: undefined,
+      description: undefined,
+      logo: 'GROWING'
+    },
+  })
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values)
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" className="w-full flex items-center">
+          <Plus className="size-4" />
+          Nueva cartera
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Detalles de la cartera</DialogTitle>
+          <DialogDescription>
+            Puedes crear una nueva cartera de inversión independiente de las que ya tienes registradas.
+          </DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="flex items-center gap-2">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Nombre</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+              <FormField
+                control={form.control}
+                name="logo"
+                render={({ field }) => (
+                  <FormItem className="self-end">
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="w-[30px]">
+                        {Object.keys(WALLET_ICON_CONVERSION).map((key) => {
+                          const Icon = WALLET_ICON_CONVERSION[key as WalletIconType]
+                          return (
+                            <SelectItem key={key} value={key}>
+                              <Icon className="h-4 w-4" />
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Descripción</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit">Guardar</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }
