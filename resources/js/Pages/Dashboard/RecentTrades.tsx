@@ -1,4 +1,7 @@
 import { cn, formatNumber } from "@/lib/utils"
+import { useActiveWalletStore } from "@/stores"
+import axios from "axios"
+import { useEffect, useState } from "react"
 
 
 const fakeData = [
@@ -37,6 +40,22 @@ const fakeData = [
 ]
 
 export default function RecentTrades() {
+
+    const {activeWallet} = useActiveWalletStore()
+    const [recentTrades, setRecentTrades] = useState<any[]>([])
+
+    const fetchRecentTrades = async () => {
+        const response = await axios.post(route('trades.get'), {
+            walletId: activeWallet.id ?? 0
+        })
+
+        console.log(response)
+    }
+
+    useEffect(() => {
+        fetchRecentTrades()
+    }, [activeWallet])
+
     return (
         <>
             {fakeData.length == 0 ? (

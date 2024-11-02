@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TradeController;
 use App\Http\Controllers\WalletController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/api')->group(function(){
         Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');
         Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
+
+        Route::post('/trades', [TradeController::class, 'getTrades'])->name('trades.get');
     });
 
 

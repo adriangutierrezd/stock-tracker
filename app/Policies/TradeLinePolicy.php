@@ -2,19 +2,26 @@
 
 namespace App\Policies;
 
+use App\Models\TradeLine;
 use App\Models\User;
-use App\Models\Wallet;
 use Illuminate\Auth\Access\Response;
 
-class WalletPolicy
+class TradeLinePolicy
 {
-    
     /**
-     * Determine whether the user can use the model.
+     * Determine whether the user can view any models.
      */
-    public function use(User $user, Wallet $wallet): bool
+    public function viewAny(User $user): bool
     {
-        return $this->walletBelongsToUser($user, $wallet);
+        //
+    }
+
+    /**
+     * Determine whether the user can view the model.
+     */
+    public function view(User $user, TradeLine $tradeLine): bool
+    {
+        //
     }
 
     /**
@@ -28,7 +35,7 @@ class WalletPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Wallet $wallet): bool
+    public function update(User $user, TradeLine $tradeLine): bool
     {
         //
     }
@@ -36,7 +43,7 @@ class WalletPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Wallet $wallet): bool
+    public function delete(User $user, TradeLine $tradeLine): bool
     {
         //
     }
@@ -44,7 +51,7 @@ class WalletPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Wallet $wallet): bool
+    public function restore(User $user, TradeLine $tradeLine): bool
     {
         //
     }
@@ -52,14 +59,8 @@ class WalletPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Wallet $wallet): bool
+    public function forceDelete(User $user, TradeLine $tradeLine): bool
     {
         //
     }
-
-
-    private function walletBelongsToUser(User $user, Wallet $wallet){
-        return $wallet->user->id == $user->id;
-    }
-
 }
