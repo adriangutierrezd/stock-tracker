@@ -7,7 +7,6 @@ import {
     CardTitle,
 } from "@/Components/ui/card"
 import { Calendar as CalendarIcon, Search } from 'lucide-react';
-import { Overview } from './Overview';
 import RecentTrades from './RecentTrades';
 import { format } from "date-fns"
 import { DateRange } from "react-day-picker"
@@ -22,6 +21,7 @@ import {
 } from "@/Components/ui/popover"
 import React from 'react';
 import DashboardCards from './DashboardCards';
+import Overview from './Overview';
 
 
 interface Props {
@@ -96,7 +96,9 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                         <CardTitle>Resumen</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                        <Overview />
+                        {date && (
+                            <Overview dateRange={date} />
+                        )}
                     </CardContent>
                 </Card>
                 <Card className="col-span-3">

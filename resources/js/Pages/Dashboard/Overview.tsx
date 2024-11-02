@@ -1,83 +1,118 @@
-"use client"
+import { Bar, BarChart, CartesianGrid, Cell, LabelList } from "recharts"
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/Components/ui/chart"
+import { DateRange } from "react-day-picker"
+import { useState } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+export const description = "A bar chart with negative values"
 
-const data = [
+const fakeData = [
   {
-    name: "Jan",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '1 nov',
+    amount: 200.33,
   },
   {
-    name: "Feb",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '2 nov',
+    amount: -34.21
   },
   {
-    name: "Mar",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '4 nov',
+    amount: 20.01
   },
   {
-    name: "Apr",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '5 nov',
+    amount: -20.01
   },
   {
-    name: "May",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '6 nov',
+    amount: 2.23
   },
   {
-    name: "Jun",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '10 nov',
+    amount: 200.01
   },
   {
-    name: "Jul",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '11 nov',
+    amount: -10.01
   },
   {
-    name: "Aug",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '14 nov',
+    amount: 23.01
   },
   {
-    name: "Sep",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '15 nov',
+    amount: 21.01
   },
   {
-    name: "Oct",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '20 nov',
+    amount: -20.01
   },
   {
-    name: "Nov",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '21 nov',
+    amount: 20.01
   },
   {
-    name: "Dec",
-    total: Math.floor(Math.random() * 5000) + 1000,
+    date: '22 nov',
+    amount: 20.01
   },
+  {
+    date: '27 nov',
+    amount: 20.01
+  }
 ]
 
-export function Overview() {
+interface Props {
+  readonly dateRange: DateRange
+}
+
+const chartConfig = {
+  amount: {
+    label: "Resultado",
+  },
+} satisfies ChartConfig
+
+export default function Overview({ dateRange }: Props) {
+
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+
+  setTimeout(() => {
+    setIsLoading(false)
+  }, 1500)
+
   return (
-    <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={data}>
-        <XAxis
-          dataKey="name"
-          stroke="#888888"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-        />
-        <YAxis
-          stroke="#888888"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(value) => `$${value}`}
-        />
-        <Bar
-          dataKey="total"
-          fill="currentColor"
-          radius={[4, 4, 0, 0]}
-          className="fill-primary"
-        />
-      </BarChart>
-    </ResponsiveContainer>
+    <>
+      {isLoading ? (
+        <Skeleton className="h-fit w-fit" />
+      ) : (
+        <ChartContainer config={chartConfig}>
+          <BarChart accessibilityLayer data={fakeData}>
+            <CartesianGrid vertical={false} />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent hideLabel hideIndicator />}
+            />
+            <Bar dataKey="amount">
+              <LabelList position="top" dataKey="date" fillOpacity={1} />
+              {fakeData.map((item) => (
+                <Cell
+                  key={item.date}
+                  fill={
+                    item.amount > 0
+                      ? "hsl(var(--chart-1))"
+                      : "hsl(var(--chart-2))"
+                  }
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ChartContainer>
+      )}
+    </>
+
   )
 }
