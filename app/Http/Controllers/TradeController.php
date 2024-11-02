@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FetchTradesRequest;
 use App\Http\Requests\StoreTradeRequest;
 use App\Http\Requests\UpdateTradeRequest;
+use App\Http\Resources\TradeCollection;
 use App\Models\Trade;
 use Error;
+use Inertia\Inertia;
 
 class TradeController extends Controller
 {
@@ -15,13 +17,19 @@ class TradeController extends Controller
     public function getTrades(FetchTradesRequest $request){
         try{
 
-            $trades = Trade::where([
-                'wallet_id' => $request->walletId,
-                'status' => 'COMPLETED'
-            ])->orderBy('id', 'desc')
-            ->limit(10)
+            $filters = [
+                'wallet_id' => $request->walletId
+            ];
+
+            if($request->status){
+                $filters['status'] = $request->status;
+            }
+
+            $trades = Trade::with('tradeLines')
+            ->where($filters)
+            ->orderBy('id', 'desc')
             ->get();
-            return response()->json($trades, 200);
+            return response()->json(new TradeCollection($trades), 200);
 
         }catch(Error){
             //
@@ -33,7 +41,7 @@ class TradeController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Trades/Page');
     }
 
     /**

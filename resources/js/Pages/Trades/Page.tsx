@@ -1,16 +1,8 @@
+import { Head } from "@inertiajs/react";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/Components/ui/card"
-import { Calendar as CalendarIcon, Search } from 'lucide-react';
-import RecentTrades from './RecentTrades';
-import { format } from "date-fns"
+import React from "react";
+import { format, subDays } from "date-fns"
 import { DateRange } from "react-day-picker"
-
 import { cn } from "@/lib/utils"
 import { Button } from "@/Components/ui/button"
 import { Calendar } from "@/Components/ui/calendar"
@@ -19,27 +11,23 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/Components/ui/popover"
-import React from 'react';
-import DashboardCards from './DashboardCards';
-import Overview from './Overview';
+import { Search, Calendar as CalendarIcon } from "lucide-react";
+import { es } from 'date-fns/locale';
+import TradesTable from "./TradesTable";
 
-
-interface Props {
-    readonly initialDate: Date,
-    readonly endDate: Date
-}
-
-export default function Dashboard({ initialDate, endDate }: Props) {
+export default function Page(){
 
     const [date, setDate] = React.useState<DateRange | undefined>({
-        from: initialDate,
-        to: endDate
+        from: new Date(),
+        to: subDays(new Date(), 30),
     })
 
     return (
-        <AuthenticatedLayout >
-            <Head title="Dashboard" />
-            <h1 className='text-2xl/7 font-bold text-primary-foregroun sm:truncate sm:text-3xl sm:tracking-tight'>Dashboard</h1>
+        <AuthenticatedLayout>
+            <Head title="Trades" />
+            <h1 className='text-2xl/7 font-bold text-primary-foregroun sm:truncate sm:text-3xl sm:tracking-tight'>
+                Trades
+            </h1>
 
             <div className="mt-4 flex items-center justify-end gap-2">
                 <div className={cn("grid gap-2", '')}>
@@ -57,14 +45,14 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                                 {date?.from ? (
                                     date.to ? (
                                         <>
-                                            {format(date.from, "LLL dd, y")} -{" "}
-                                            {format(date.to, "LLL dd, y")}
+                                            {format(date.from, "LLL dd, y", { locale: es })} -{" "}
+                                            {format(date.to, "LLL dd, y", { locale: es })}
                                         </>
                                     ) : (
-                                        format(date.from, "LLL dd, y")
+                                        format(date.from, "LLL dd, y", {locale: es})
                                     )
                                 ) : (
-                                    <span>Pick a date</span>
+                                    <span>Selecciona una fecha</span>
                                 )}
                             </Button>
                         </PopoverTrigger>
@@ -76,6 +64,7 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                                 selected={date}
                                 onSelect={setDate}
                                 numberOfMonths={2}
+                                locale={es}
                             />
                         </PopoverContent>
                     </Popover>
@@ -86,31 +75,9 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                 </Button>
             </div>
 
-            {date && (
-                <DashboardCards dateRange={date} />
-            )}
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
-                <Card className="col-span-full md:col-span-4">
-                    <CardHeader>
-                        <CardTitle>Resumen</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2">
-                        {date && (
-                            <Overview dateRange={date} />
-                        )}
-                    </CardContent>
-                </Card>
-                <Card className="col-span-full md:col-span-3">
-                    <CardHeader>
-                        <CardTitle>Operaciones recientes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <RecentTrades />
-                    </CardContent>
-                </Card>
+            <div className="mt-4">
+                <TradesTable />
             </div>
-
 
         </AuthenticatedLayout>
     );

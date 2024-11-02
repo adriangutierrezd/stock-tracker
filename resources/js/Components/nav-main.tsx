@@ -1,5 +1,6 @@
 "use client"
 import {
+  Activity,
   Bot,
   LayoutDashboard,
   Wallet,
@@ -57,6 +58,12 @@ const items: SidebarItem[] = [
     title: 'Wallets',
     url: route('wallets.index'),
     icon: Wallet
+  },
+  {
+    type: 'SINGLE',
+    title: 'Trades',
+    url: route('trades.index'),
+    icon: Activity
   },
   // {
   //   type: 'GROUP',

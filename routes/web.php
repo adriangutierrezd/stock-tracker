@@ -21,6 +21,7 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['au
 
 Route::middleware('auth')->group(function () {
 
+    Route::get('/trades', [TradeController::class, 'index'])->name('trades.index');
     Route::get('/wallets', [WalletController::class, 'index'])->name('wallets.index');
 
     Route::prefix('/api')->group(function(){
