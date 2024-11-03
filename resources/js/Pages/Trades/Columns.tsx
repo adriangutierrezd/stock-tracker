@@ -15,7 +15,7 @@ import DeleteTradeModal from "./DeleteTradeModal"
 import { Link } from "@inertiajs/react"
 
 
-export const columns: ColumnDef<Trade>[] = [
+export const columns = (handleDeleteTrade: (tradeId: number) => void):  ColumnDef<Trade>[] => [
   {
     accessorKey: "company",
     header: "Empresa",
@@ -74,7 +74,7 @@ export const columns: ColumnDef<Trade>[] = [
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <DeleteTradeModal tradeId={row.original.id} />
+              <DeleteTradeModal handleDeleteTrade={() => { handleDeleteTrade(row.original.id) }} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

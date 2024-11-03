@@ -12,3 +12,7 @@ export function formatNumber(number: number) {
     maximumFractionDigits: 2
   }).format(number)
 }
+
+export function getErrorMessage(error: any){
+  return error instanceof Error ? error.message : 'Ha ocurrido un error inesperado'
+}

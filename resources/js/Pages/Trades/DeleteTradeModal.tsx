@@ -10,25 +10,10 @@ import {
     AlertDialogTrigger,
 } from "@/Components/ui/alert-dialog"
 import { Button } from "@/Components/ui/button"
-import axios from "axios"
 import { Trash } from "lucide-react"
-import { useState } from "react"
 
 
-export default function DeleteTradeModal({ tradeId }: { readonly tradeId: number }) {
-
-
-    const [executing, setExecuting] = useState<boolean>(false)
-    const handleDelete = async () => {
-        try{
-            setExecuting(true)
-            const response = await axios.delete(route('trades.destroy', { trade: tradeId }))
-        }catch(error){
-            //
-        }finally{
-            setExecuting(false)
-        }
-    }
+export default function DeleteTradeModal({ handleDeleteTrade }: { readonly handleDeleteTrade: () => void }) {
 
     return (
         <AlertDialog>
@@ -48,7 +33,7 @@ export default function DeleteTradeModal({ tradeId }: { readonly tradeId: number
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete}>Sí, eliminar</AlertDialogAction>
+                    <AlertDialogAction onClick={handleDeleteTrade}>Sí, eliminar</AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>
