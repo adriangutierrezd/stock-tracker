@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
 
         Route::post('/trades', [TradeController::class, 'getTrades'])->name('trades.get');
+        Route::delete('/trades/{trade}', [TradeController::class, 'destroy'])->name('trades.destroy');
     });
 
 

@@ -45,7 +45,7 @@ class TradePolicy
      */
     public function delete(User $user, Trade $trade): bool
     {
-        //
+        return $this->tradeBelongsToUser($user, $trade);
     }
 
     /**
@@ -62,5 +62,10 @@ class TradePolicy
     public function forceDelete(User $user, Trade $trade): bool
     {
         //
+    }
+
+
+    private function tradeBelongsToUser(User $user, Trade $trade){
+        return $trade->wallet->user->id == $user->id;
     }
 }

@@ -3,7 +3,17 @@ import { Button } from "@/Components/ui/button"
 import { formatNumber } from "@/lib/utils"
 import { Trade } from "@/types"
 import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu"
+import DeleteTradeModal from "./DeleteTradeModal"
+import { Link } from "@inertiajs/react"
+
 
 export const columns: ColumnDef<Trade>[] = [
   {
@@ -41,7 +51,34 @@ export const columns: ColumnDef<Trade>[] = [
     },
     cell: ({ row }) => {
       const formatted = formatNumber(row.getValue('result'))
-      return <div className="text-center">{formatted}€</div>
+      return <div className="text-left ml-4">{formatted}€</div>
     },
-  }
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Abrir menú</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+            <DropdownMenuItem asChild>
+              <Link href="#" className="p-2 text-sm flex justify-start gap-2 items-center w-full cursor-pointer">
+                  <Pencil className="size-4 text-blue-500" />
+                  Visualizar
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <DeleteTradeModal tradeId={row.original.id} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+  },
 ]

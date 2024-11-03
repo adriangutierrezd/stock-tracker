@@ -7,7 +7,9 @@ use App\Http\Requests\StoreTradeRequest;
 use App\Http\Requests\UpdateTradeRequest;
 use App\Http\Resources\TradeCollection;
 use App\Models\Trade;
+use App\Policies\TradePolicy;
 use Error;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class TradeController extends Controller
@@ -87,8 +89,17 @@ class TradeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Trade $trade)
+    public function destroy(Request $request, Trade $trade)
     {
-        //
+        if($request->user()->cannot('delete', [$trade, TradePolicy::class])){
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+
+        if($trade->delete()){
+            return response()->json(['message' => 'Trade eliminado con éxito'], 200);
+        }
+
+        return response()->json(['message' => 'Ha ocurrido un error inesperado'], 500);
     }
 }

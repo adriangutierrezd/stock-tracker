@@ -9,7 +9,6 @@ import {
     getFilteredRowModel,
     getPaginationRowModel
 } from "@tanstack/react-table"
-import { Input } from "@/Components/ui/input"
 import {
     Table,
     TableBody,
@@ -22,8 +21,8 @@ import { Button } from "@/Components/ui/button"
 import React from "react"
 
 interface DataTableProps<TData, TValue> {
-    columns: ColumnDef<TData, TValue>[]
-    data: TData[]
+    readonly columns: ColumnDef<TData, TValue>[]
+    readonly data: TData[]
 }
 
 export function DataTable<TData, TValue>({
@@ -52,16 +51,6 @@ export function DataTable<TData, TValue>({
 
     return (
         <>
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Filter companys..."
-                    value={(table.getColumn("company")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("company")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
-            </div>
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
