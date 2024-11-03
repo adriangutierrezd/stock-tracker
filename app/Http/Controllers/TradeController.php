@@ -34,7 +34,7 @@ class TradeController extends Controller
             return response()->json(new TradeCollection($trades), 200);
 
         }catch(Error){
-            //
+            return response()->json(['message' => 'Ha ocurrido un error inesperado'], 500);
         }
     }
 
