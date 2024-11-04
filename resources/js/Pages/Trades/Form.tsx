@@ -33,31 +33,51 @@ import {
 import { Calendar } from "@/Components/ui/calendar";
 import { Button } from "@/Components/ui/button";
 import { Calendar as CalendarIcon, Plus, Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
+import { v4 as uuidv4 } from 'uuid';
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
+import { useActiveWalletStore } from "@/stores";
 
 interface Props {
     readonly trade: Trade | undefined
 }
 
-const defaultTrade = {
+interface AuxTradeLine {
+    id: number | string;
+    type: string;
+    price: string | number;
+    shares: string | number;
+    commission: string | number;
+}
+
+const defaultTrade: AuxTradeLine = {
+    id: uuidv4(),
     type: 'BUY',
     price: '',
     shares: '',
     commission: ''
 }
 
+const isValidNumber = (value: string | number): boolean => 
+    value !== '' && !isNaN(Number(value));
+
+const isTradeLineCorrect = ({ price, shares, commission }: AuxTradeLine): boolean => 
+    [price, shares, commission].every(isValidNumber);
+
 export default function Page({ trade }: Props) {
 
-
-    const [tradeLines, setTradeLines] = useState<any[]>([defaultTrade])
+    const { toast } = useToast()
+    const { activeWallet } = useActiveWalletStore()
+    const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>([defaultTrade])
 
     const formSchema = z.object({
         company: z.string().min(1).max(10),
         strategy: z.string().max(20).optional(),
         date: z.date(),
         status: z.string(),
-        time: z.string().time(),
+        time: z.string(),
         comment: z.string().optional()
     })
 
@@ -74,15 +94,20 @@ export default function Page({ trade }: Props) {
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        if(tradeLines.some((tradeLine) => !isTradeLineCorrect(tradeLine))){
+            toast({
+                title: 'Error',
+                description: 'Hay un error en al menos una de tus operaciones',
+                variant: 'destructive'
+            })
+            return
+        }
 
-    }
-
-    const handleAddNewOp = () => {
-        setTradeLines([...tradeLines, defaultTrade])
-    }
-
-    const handleDeleteOp = (idx: number) => {
-        setTradeLines(tradeLines.filter((tL, index) => index != idx))
+        const response = await axios.post(route('trades.store'), {
+            ...values,
+            walletId: activeWallet.id,
+            tradeLines
+        })
     }
 
     return (
@@ -208,25 +233,7 @@ export default function Page({ trade }: Props) {
                             Aquí puedes añadir todas las entradas y salidas que hayas hecho durante este trade:
                         </p>
 
-                        {tradeLines.map((tradeLine, i) => (
-                            <div key={i} className="flex items-center gap-2 mb-3">
-                                <div className="flex-grow">
-                                    <TradeLineForm />
-                                </div>
-
-                                {i !== 0 && (
-                                    <Button type="button" onClick={() => { handleDeleteOp(i) }} className="self-end" variant="outline">
-                                        <Trash className="text-red-500" />
-                                    </Button>
-                                )}
-                            </div>
-                        ))}
-
-
-                        <Button className="w-full mt-4" type="button" variant="secondary" onClick={handleAddNewOp}>
-                            <Plus className="size-4" />
-                            Añadir nueva operación
-                        </Button>
+                        <TradeLinesForm handleUpdateTrades={setTradeLines} />
 
                     </div>
 
@@ -262,94 +269,101 @@ export default function Page({ trade }: Props) {
     );
 }
 
+interface TradeLineProps {
+    readonly handleUpdateTrades: (tLines: AuxTradeLine[]) => void
+}
 
-const TradeLineForm = () => {
+const TradeLinesForm = ({ handleUpdateTrades }: TradeLineProps) => {
 
-    const formSchema = z.object({
-        type: z.string(),
-        shares: z.number(),
-        price: z.number(),
-        commission: z.number()
-    })
+    const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>([defaultTrade])
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            type: 'BUY',
-            shares: undefined,
-            price: undefined,
-            commission: undefined
-        },
-    })
-
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-
+    const handleFieldChange = ({ id, key, value }: { id: number | string, key: string, value: string | number }) => {
+        setTradeLines(prevTradeLines =>
+            prevTradeLines.map(tradeLine =>
+                tradeLine.id === id ? { ...tradeLine, [key]: value } : tradeLine
+            )
+        );
     }
 
+    const handleAddTrade = () => {
+        setTradeLines([...tradeLines, { ...defaultTrade, id: uuidv4() }])
+    }
+
+    const handleDeleteTrade = (id: number | string) => {
+        setTradeLines(prevTradeLines =>
+            prevTradeLines.filter(tradeLine => tradeLine.id != id)
+        );
+    }
+
+    useEffect(() => {
+        handleUpdateTrades(tradeLines)
+    }, [tradeLines])
+
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-12 gap-4">
-                <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                        <FormItem className="col-span-full md:col-span-3">
-                            <FormLabel>Tipo de operación</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Indica el tipo de operación" />
-                                    </SelectTrigger>
-                                </FormControl>
+        <>
+            {tradeLines.map((tradeLine) => {
+                return (
+                    <div key={tradeLine.id} className="grid grid-cols-9 gap-2">
+
+                        <div className="col-span-2">
+                            <Label>Tipo de orden</Label>
+                            <Select value={tradeLine.type} 
+                            onValueChange={(value) => { handleFieldChange({ id: tradeLine.id, key: 'type', value }) }}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona una opción" />
+                                </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="BUY">Compra</SelectItem>
-                                    <SelectItem value="COMPLETED">Venta</SelectItem>
+                                    <SelectItem value="SELL">Venta</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="shares"
-                    render={({ field }) => (
-                        <FormItem className="col-span-full md:col-span-3">
-                            <FormLabel>Nº Acciones</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="100" min="1" step="1" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="price"
-                    render={({ field }) => (
-                        <FormItem className="col-span-full md:col-span-3">
-                            <FormLabel>Precio (por acción)</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="1,23" min="0.01" step="0.01" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="commission"
-                    render={({ field }) => (
-                        <FormItem className="col-span-full md:col-span-3">
-                            <FormLabel>Comisión</FormLabel>
-                            <FormControl>
-                                <Input {...field} placeholder="2,00" min="0.01" step="0.01" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-            </form>
-        </Form>
+                        </div>
+
+                        <div className="col-span-2">
+                            <Label>Nº Acciones</Label>
+                            <Input
+                                type="number"
+                                step="1"
+                                min="1"
+                                name="shares"
+                                onChange={(event) => { handleFieldChange({ id: tradeLine.id, key: 'shares', value: event.target.value }) }}
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <Label>Precio (unitario)</Label>
+                            <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                name="price"
+                                onChange={(event) => { handleFieldChange({ id: tradeLine.id, key: 'price', value: event.target.value }) }}
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <Label>Comisión</Label>
+                            <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                name="commission"
+                                onChange={(event) => { handleFieldChange({ id: tradeLine.id, key: 'commission', value: event.target.value }) }}
+                            />
+                        </div>
+
+                        <Button onClick={() => { handleDeleteTrade(tradeLine.id) }} type="button" variant="outline" className="self-end">
+                            <Trash className="size-4 text-red-500" />
+                        </Button>
+                    </div>
+                )
+            })}
+
+            <Button onClick={handleAddTrade} type="button" className="w-full mt-4" variant="secondary">
+                <Plus className="size-4" />
+                Añadir operación
+            </Button>
+        </>
     )
+
 }

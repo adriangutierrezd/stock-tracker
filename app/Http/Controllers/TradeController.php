@@ -59,7 +59,7 @@ class TradeController extends Controller
      */
     public function store(StoreTradeRequest $request)
     {
-        //
+        dd('Correcta request');
     }
 
     /**

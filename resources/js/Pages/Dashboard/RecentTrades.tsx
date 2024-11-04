@@ -7,6 +7,7 @@ import { Plus } from "lucide-react"
 import { useEffect, useState } from "react"
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { Link } from "@inertiajs/react"
 
 
 export default function RecentTrades() {
@@ -31,9 +32,11 @@ export default function RecentTrades() {
             {recentTrades.length == 0 ? (
                 <div className="h-full w-full flex flex-col gap-4 items-center justify-center">
                     <p>Aún no has registrado ninguna operación.</p>
-                    <Button variant="secondary">
-                        <Plus className="size-4" />
-                        Añadir
+                    <Button variant="secondary" asChild>
+                        <Link href={route('trades.create')}>
+                            <Plus className="size-4" />
+                            Añadir
+                        </Link>
                     </Button>
                 </div>
             ) : (
