@@ -23,6 +23,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/trades', [TradeController::class, 'index'])->name('trades.index');
     Route::get('/wallets', [WalletController::class, 'index'])->name('wallets.index');
+    Route::get('/trades/create', [TradeController::class, 'create'])->name('trades.create');
+
 
     Route::prefix('/api')->group(function(){
         Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');

@@ -29,10 +29,9 @@ export interface TradeLine {
     id: number
     tradeId: number
     shares: number
-    amount: number
+    price: number
     type: 'BUY' | 'SELL'
     commission: number
-    comment: string | null
 }
 
 export interface Trade {

@@ -15,10 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('trade_id');
             $table->unsignedSmallInteger('shares');
-            $table->float('amount');
+            $table->float('price');
             $table->enum('type', ['BUY', 'SELL']);
             $table->float('commission');
-            $table->string('comment')->nullable();
             $table->timestamps();
 
             $table->foreign('trade_id')->references('id')->on('trades')->onDelete('cascade');

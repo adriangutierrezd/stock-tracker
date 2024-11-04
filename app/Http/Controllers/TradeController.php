@@ -51,7 +51,7 @@ class TradeController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Trades/Form');
     }
 
     /**
