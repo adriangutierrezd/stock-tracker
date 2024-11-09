@@ -24,7 +24,7 @@ import {
 import { Input } from "@/Components/ui/input";
 import { Textarea } from "@/Components/ui/textarea"
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, formatDate } from "date-fns";
 import {
     Popover,
     PopoverContent,
@@ -105,9 +105,22 @@ export default function Page({ trade }: Props) {
 
         const response = await axios.post(route('trades.store'), {
             ...values,
+            date: formatDate(values.date, 'yyyy-LL-dd'),
             walletId: activeWallet.id,
             tradeLines
         })
+
+        if(response.status != 201){
+            toast({
+                title: 'Error',
+                description: response.data.data.message,
+                variant: 'destructive'
+            })
+            return
+        }
+
+        window.location = route('trades.index');
+        
     }
 
     return (

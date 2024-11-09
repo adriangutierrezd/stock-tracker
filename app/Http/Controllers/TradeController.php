@@ -7,9 +7,12 @@ use App\Http\Requests\StoreTradeRequest;
 use App\Http\Requests\UpdateTradeRequest;
 use App\Http\Resources\TradeCollection;
 use App\Models\Trade;
+use App\Models\TradeLine;
 use App\Policies\TradePolicy;
 use Error;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class TradeController extends Controller
@@ -59,16 +62,69 @@ class TradeController extends Controller
      */
     public function store(StoreTradeRequest $request)
     {
-        dd('Correcta request');
+        try{
+
+            $totalCost = 0;
+            $totalReward = 0;
+
+            DB::beginTransaction();
+
+            $trade = Trade::create([
+                'wallet_id' => $request->walletId,
+                'company' => $request->company,
+                'strategy' => $request->strategy,
+                'date' => $request->date,
+                'week' => date('W', $request->week),
+                'year' => date('Y', $request->year),
+                'status' => $request->status,
+                'time' => $request->time,
+                'result' => 0,
+                'comment' => $request->comment
+            ]);
+
+            if(!$trade){
+                throw new Error('Error guardando trade');
+            }
+
+            foreach($request->tradeLines as $trLine){
+                $totalCost += floatval($trLine['commission']);
+                if($trLine['type'] == 'BUY'){
+                    $totalCost += floatval($trLine['price']) * intval($trLine['shares']);
+                }else{
+                    $totalReward += floatval($trLine['price']) * intval($trLine['shares']);
+                }
+
+
+                $tradeLine = TradeLine::create([
+                    'trade_id' => $trade->id,
+                    'shares' => $trLine['shares'],
+                    'price' => $trLine['price'],
+                    'type' => $trLine['type'],
+                    'commission' => $trLine['commission']
+                ]);
+
+                if(!$tradeLine){
+                    throw new Error('Error guardando tradeLine');
+                }
+            }
+
+            if($request->status == 'COMPLETED'){
+                $trade->result = $totalReward - $totalCost;
+                $trade->update();
+            }
+
+            DB::commit();
+
+            return response()->json(['messgae' => 'Trade guardado con éxito'], 201);
+        }catch(QueryException $qE){
+            DB::rollBack();
+            return response()->json(['messgae' => 'Ha ocurrido un error inesperado'], 500);
+        }catch(Error){
+            DB::rollBack();
+            return response()->json(['messgae' => 'Ha ocurrido un error inesperado'], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Trade $trade)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.

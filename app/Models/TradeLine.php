@@ -10,10 +10,9 @@ class TradeLine extends Model
     protected $fillable = [
         'trade_id',
         'shares',
-        'amount',
+        'price',
         'type',
-        'commission',
-        'comment'
+        'commission'
     ];
 
     public function trade(){
