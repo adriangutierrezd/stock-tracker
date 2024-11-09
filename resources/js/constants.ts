@@ -1,5 +1,5 @@
 import { AudioWaveform, Carrot, ChartPie, Joystick, Shrub } from "lucide-react";
-import { WalletIconType } from "./types";
+import { TradeStatuses, WalletIconType } from "./types";
 
 export const WALLET_ICON_CONVERSION: Record<WalletIconType, React.FC<React.SVGProps<SVGSVGElement>>> = {
     'GROWING': Shrub,
@@ -8,3 +8,8 @@ export const WALLET_ICON_CONVERSION: Record<WalletIconType, React.FC<React.SVGPr
     'CARROT': Carrot,
     'JOYSTICK': Joystick
 };
+
+export const TRADE_STATUS_CONVERSION: Record<TradeStatuses, string> = {
+    'COMPLETED': 'Completado',
+    'DRAFT': 'Borrador'
+}

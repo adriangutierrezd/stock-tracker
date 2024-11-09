@@ -1,6 +1,6 @@
 
 import { Button } from "@/Components/ui/button"
-import { formatNumber } from "@/lib/utils"
+import { cn, formatNumber } from "@/lib/utils"
 import { Trade } from "@/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, MoreHorizontal, Pencil } from "lucide-react"
@@ -13,6 +13,7 @@ import {
 } from "@/Components/ui/dropdown-menu"
 import DeleteTradeModal from "./DeleteTradeModal"
 import { Link } from "@inertiajs/react"
+import { TRADE_STATUS_CONVERSION } from "@/constants"
 
 
 export const columns = (handleDeleteTrade: (tradeId: number) => void):  ColumnDef<Trade>[] => [
@@ -35,6 +36,15 @@ export const columns = (handleDeleteTrade: (tradeId: number) => void):  ColumnDe
   {
     accessorKey: "status",
     header: "Estado",
+    cell: ({ row }) => {
+      return (
+        <span className={cn(
+          'rounded-full p-2',
+          row.original.status == 'COMPLETED' ? 'text-emerald-500 bg-emerald-100/60 dark:text-emerald-800 dark:bg-emerald-300' : 'text-gray-500 bg-gray-100 rounded-full dark:text-gray-400 gap-x-2 dark:bg-gray-800',
+
+      )}>{TRADE_STATUS_CONVERSION[row.original.status]}</span>
+      )
+    }
   },
   {
     accessorKey: "result",

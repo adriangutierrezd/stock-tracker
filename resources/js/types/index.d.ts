@@ -15,6 +15,7 @@ export type PageProps<
     };
 };
 
+export type TradeStatuses = 'DRAFT' | 'COMPLETED'
 export type WalletIconType = 'GROWING' | 'DIVERSIFIED' | 'RISK' | 'CARROT' | 'JOYSTICK';
 
 export interface Wallet {
@@ -42,7 +43,7 @@ export interface Trade {
     date: Date
     week: number
     year: number
-    status: 'DRAFT' | 'COMPLETED'
+    status: TradeStatuses
     time: string | null
     result: number | null
     comment: string | null,
