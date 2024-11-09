@@ -11,6 +11,7 @@ use App\Models\Trade;
 use App\Models\TradeLine;
 use App\Policies\TradePolicy;
 use Error;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,14 +32,17 @@ class TradeController extends Controller
                 $filters['status'] = $request->status;
             }
 
-            $trades = Trade::with('tradeLines')
+            $trades = Trade::with('tradeLines') // Carga la relación de Eloquent tradeLines
             ->where($filters)
+            ->when($request->startDate && $request->endDate, function ($query) use($request) {
+                $query->whereBetween('date', [$request->startDate, $request->endDate]);
+            })
             ->orderBy('id', 'desc')
             ->get();
             return response()->json(new TradeCollection($trades), 200);
 
-        }catch(Error){
-            return response()->json(['message' => 'Ha ocurrido un error inesperado'], 500);
+        }catch(Error $e){
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 

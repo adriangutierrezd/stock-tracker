@@ -8,7 +8,7 @@ import { useActiveWalletStore } from "@/stores"
 import { useToast } from "@/hooks/use-toast"
 import { getErrorMessage, cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
-import { format, subDays } from "date-fns"
+import { format, formatDate, subDays } from "date-fns"
 import { Button } from "@/Components/ui/button"
 import { Calendar } from "@/Components/ui/calendar"
 import {
@@ -28,8 +28,8 @@ export default function TradesTable() {
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: subDays(new Date(), 30),
+    from: subDays(new Date(), 30),
+    to: new Date(),
   })
 
 
@@ -41,7 +41,9 @@ export default function TradesTable() {
     try {
       setIsLoading(true)
       const response = await axios.post(route('trades.get'), {
-        walletId: activeWallet.id
+        walletId: activeWallet.id,
+        startDate: formatDate(date?.from ?? new Date(), 'yyyy-LL-dd'),
+        endDate: formatDate(date?.to ?? new Date(), 'yyyy-LL-dd')
       })
 
       setTrades(response.data)
