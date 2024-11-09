@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/wallets', [WalletController::class, 'index'])->name('wallets.index');
     Route::post('/trades', [TradeController::class, 'store'])->name('trades.store');
     Route::get('/trades/create', [TradeController::class, 'create'])->name('trades.create');
+    Route::get('/trades/{trade}', [TradeController::class, 'edit'])->name('trades.edit');
 
 
     Route::prefix('/api')->group(function(){
@@ -32,6 +33,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
 
         Route::post('/trades', [TradeController::class, 'getTrades'])->name('trades.get');
+        Route::put('/trades/{trade}', [TradeController::class, 'update'])->name('trades.update');
         Route::delete('/trades/{trade}', [TradeController::class, 'destroy'])->name('trades.destroy');
     });
 

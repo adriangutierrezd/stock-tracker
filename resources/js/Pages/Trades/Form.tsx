@@ -23,8 +23,8 @@ import {
 } from "@/Components/ui/form"
 import { Input } from "@/Components/ui/input";
 import { Textarea } from "@/Components/ui/textarea"
-import { cn } from "@/lib/utils";
-import { format, formatDate } from "date-fns";
+import { cn, getErrorMessage } from "@/lib/utils";
+import { format, formatDate, parse } from "date-fns";
 import {
     Popover,
     PopoverContent,
@@ -40,8 +40,12 @@ import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 import { useActiveWalletStore } from "@/stores";
 
+interface Data {
+    readonly data: Trade
+}
+
 interface Props {
-    readonly trade: Trade | undefined
+    readonly trade: Data | undefined
 }
 
 interface AuxTradeLine {
@@ -66,11 +70,41 @@ const isValidNumber = (value: string | number): boolean =>
 const isTradeLineCorrect = ({ price, shares, commission }: AuxTradeLine): boolean => 
     [price, shares, commission].every(isValidNumber);
 
+const getDefaultTrade = (trade: Trade | undefined) => {
+    if(!trade){
+        return {
+            company: undefined,
+            strategy: undefined,
+            date: new Date(),
+            status: undefined,
+            time: undefined,
+            comment: undefined
+        }
+    }
+
+    return {
+        company: trade.company,
+        strategy: trade.strategy,
+        date: parse(trade.date, 'yyyy-MM-dd', new Date()),
+        status: trade.status as string,
+        time: trade.time ?? undefined,
+        comment: trade.comment ?? undefined
+    }
+}
+
+const getDefaultTradeLines = (trade: Trade | undefined) => {
+    if(trade){
+        return trade.tradeLines
+    }
+
+    return [defaultTrade]
+}
+
 export default function Page({ trade }: Props) {
 
     const { toast } = useToast()
     const { activeWallet } = useActiveWalletStore()
-    const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>([defaultTrade])
+    const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>([])
 
     const formSchema = z.object({
         company: z.string().min(1).max(10),
@@ -83,44 +117,44 @@ export default function Page({ trade }: Props) {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            company: undefined,
-            strategy: undefined,
-            date: new Date(),
-            status: undefined,
-            time: undefined,
-            comment: undefined
-        },
+        defaultValues: getDefaultTrade(trade?.data),
     })
 
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        if(tradeLines.some((tradeLine) => !isTradeLineCorrect(tradeLine))){
+        try{
+            if(tradeLines.some((tradeLine) => !isTradeLineCorrect(tradeLine))){
+                throw new Error('Hay un error en al menos una de tus operaciones')
+            }
+    
+            const payload = {
+                ...values,
+                date: formatDate(values.date, 'yyyy-LL-dd'),
+                walletId: activeWallet.id,
+                tradeLines
+            }
+    
+            if(trade?.data){
+                const response = await axios.put(route('trades.update', { trade: trade.data.id }), payload)
+                if(response.status != 200){
+                    throw new Error(response.data.data.message)
+                }
+            }else{
+                const response = await axios.post(route('trades.store'), payload)
+                if(response.status != 201){
+                    throw new Error(response.data.data.message)
+                }
+            }
+    
+            // @ts-ignore
+            window.location = route('trades.index');
+        }catch(error){
             toast({
                 title: 'Error',
-                description: 'Hay un error en al menos una de tus operaciones',
+                description: getErrorMessage(error),
                 variant: 'destructive'
             })
-            return
         }
-
-        const response = await axios.post(route('trades.store'), {
-            ...values,
-            date: formatDate(values.date, 'yyyy-LL-dd'),
-            walletId: activeWallet.id,
-            tradeLines
-        })
-
-        if(response.status != 201){
-            toast({
-                title: 'Error',
-                description: response.data.data.message,
-                variant: 'destructive'
-            })
-            return
-        }
-
-        window.location = route('trades.index');
-        
     }
 
     return (
@@ -246,7 +280,7 @@ export default function Page({ trade }: Props) {
                             Aquí puedes añadir todas las entradas y salidas que hayas hecho durante este trade:
                         </p>
 
-                        <TradeLinesForm handleUpdateTrades={setTradeLines} />
+                        <TradeLinesForm trade={trade?.data} handleUpdateTrades={setTradeLines} />
 
                     </div>
 
@@ -283,12 +317,13 @@ export default function Page({ trade }: Props) {
 }
 
 interface TradeLineProps {
+    readonly trade: Trade | undefined
     readonly handleUpdateTrades: (tLines: AuxTradeLine[]) => void
 }
 
-const TradeLinesForm = ({ handleUpdateTrades }: TradeLineProps) => {
+const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
 
-    const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>([defaultTrade])
+    const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>(getDefaultTradeLines(trade))
 
     const handleFieldChange = ({ id, key, value }: { id: number | string, key: string, value: string | number }) => {
         setTradeLines(prevTradeLines =>
@@ -339,6 +374,7 @@ const TradeLinesForm = ({ handleUpdateTrades }: TradeLineProps) => {
                                 step="1"
                                 min="1"
                                 name="shares"
+                                value={tradeLine.shares}
                                 onChange={(event) => { handleFieldChange({ id: tradeLine.id, key: 'shares', value: event.target.value }) }}
                             />
                         </div>
@@ -350,6 +386,7 @@ const TradeLinesForm = ({ handleUpdateTrades }: TradeLineProps) => {
                                 step="0.01"
                                 min="0"
                                 name="price"
+                                value={tradeLine.price}
                                 onChange={(event) => { handleFieldChange({ id: tradeLine.id, key: 'price', value: event.target.value }) }}
                             />
                         </div>
@@ -361,6 +398,7 @@ const TradeLinesForm = ({ handleUpdateTrades }: TradeLineProps) => {
                                 step="0.01"
                                 min="0"
                                 name="commission"
+                                value={tradeLine.commission}
                                 onChange={(event) => { handleFieldChange({ id: tradeLine.id, key: 'commission', value: event.target.value }) }}
                             />
                         </div>

@@ -18,10 +18,9 @@ class TradeLineResource extends JsonResource
             'id' => $this->id,
             'tradeId' => $this->trade_id,
             'shares' => $this->shares,
-            'amount' => $this->amount,
+            'price' => $this->price,
             'type' => $this->type,
-            'commission' => $this->commission,
-            'comment' => $this->comment
+            'commission' => $this->commission
         ];
     }
 }

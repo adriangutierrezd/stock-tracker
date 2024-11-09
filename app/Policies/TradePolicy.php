@@ -37,7 +37,7 @@ class TradePolicy
      */
     public function update(User $user, Trade $trade): bool
     {
-        //
+        return $this->tradeBelongsToUser($user, $trade);
     }
 
     /**
@@ -47,23 +47,6 @@ class TradePolicy
     {
         return $this->tradeBelongsToUser($user, $trade);
     }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Trade $trade): bool
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Trade $trade): bool
-    {
-        //
-    }
-
 
     private function tradeBelongsToUser(User $user, Trade $trade){
         return $trade->wallet->user->id == $user->id;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Wallet;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateTradeRequest extends FormRequest
@@ -11,7 +12,8 @@ class UpdateTradeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $wallet = Wallet::find($this->walletId);
+        return $this->user()->can('use', $wallet) && $this->user()->can('update', $this->trade);
     }
 
     /**
@@ -22,7 +24,14 @@ class UpdateTradeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'company' => ['required', 'min:1', 'max:10'],
+            'walletId' => ['required'],
+            'strategy' => ['required', 'min:1', 'max:20'],
+            'date' => ['required', 'date'],
+            'time' => ['nullable', 'date_format:H:i:s'],
+            'result' => ['nullable', 'numeric'],
+            'comment' => ['nullable', 'string'],
+            'tradeLines' => ['required', 'array']
         ];
     }
 }

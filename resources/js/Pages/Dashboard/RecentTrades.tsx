@@ -17,7 +17,8 @@ export default function RecentTrades() {
 
     const fetchRecentTrades = async () => {
         const response = await axios.post(route('trades.get'), {
-            walletId: activeWallet.id ?? 0
+            walletId: activeWallet.id ?? 0,
+            status: 'COMPLETED'
         })
 
         setRecentTrades(response.data)

@@ -6,6 +6,7 @@ use App\Http\Requests\FetchTradesRequest;
 use App\Http\Requests\StoreTradeRequest;
 use App\Http\Requests\UpdateTradeRequest;
 use App\Http\Resources\TradeCollection;
+use App\Http\Resources\TradeResource;
 use App\Models\Trade;
 use App\Models\TradeLine;
 use App\Policies\TradePolicy;
@@ -74,8 +75,8 @@ class TradeController extends Controller
                 'company' => $request->company,
                 'strategy' => $request->strategy,
                 'date' => $request->date,
-                'week' => date('W', $request->week),
-                'year' => date('Y', $request->year),
+                'week' => date('W', strtotime($request->date)),
+                'year' => date('Y', strtotime($request->date)),
                 'status' => $request->status,
                 'time' => $request->time,
                 'result' => 0,
@@ -131,7 +132,10 @@ class TradeController extends Controller
      */
     public function edit(Trade $trade)
     {
-        //
+        $trade->load('tradeLines');
+        return Inertia::render('Trades/Form')->with([
+            'trade' => new TradeResource($trade)
+        ]);
     }
 
     /**
@@ -139,7 +143,60 @@ class TradeController extends Controller
      */
     public function update(UpdateTradeRequest $request, Trade $trade)
     {
-        //
+        try{
+
+            $totalCost = 0;
+            $totalReward = 0;
+
+            DB::beginTransaction();
+
+            foreach($request->tradeLines as $trLine){
+                $totalCost += floatval($trLine['commission']);
+                if($trLine['type'] == 'BUY'){
+                    $totalCost += floatval($trLine['price']) * intval($trLine['shares']);
+                }else{
+                    $totalReward += floatval($trLine['price']) * intval($trLine['shares']);
+                }
+
+                if(!is_numeric($trLine['id'])){
+                    TradeLine::create([
+                        'trade_id' => $trade->id,
+                        'shares' => $trLine['shares'],
+                        'price' => $trLine['price'],
+                        'type' => $trLine['type'],
+                        'commission' => $trLine['commission']
+                    ]);
+                }else{
+                    TradeLine::where('id', $trLine['id'])->update([
+                        'shares' => $trLine['shares'],
+                        'price' => $trLine['price'],
+                        'type' => $trLine['type'],
+                        'commission' => $trLine['commission']
+                    ]);
+                }
+            }
+
+            $trade->company = $request->company;
+            $trade->strategy = $request->strategy;
+            $trade->date = $request->date;
+            $trade->week = date('W', strtotime($request->date));
+            $trade->year = date('Y', strtotime($request->date));
+            $trade->status = $request->status;
+            $trade->time = $request->time;
+            $trade->comment = $request->comment;
+            $trade->result = $request->status == 'COMPLETED' ? $totalReward - $totalCost : 0;
+            $trade->update();
+
+            DB::commit();
+
+            return response()->json(['messgae' => 'Trade guardado con éxito'], 200);
+        }catch(QueryException $qE){
+            dd($qE->getMessage());
+            return response()->json(['messgae' => 'Ha ocurrido un error inesperado'], 500);
+        }catch(Error $e){
+            dd($e->getMessage());
+            return response()->json(['messgae' => 'Ha ocurrido un error inesperado'], 500);
+        }
     }
 
     /**

@@ -68,9 +68,9 @@ export const columns = (handleDeleteTrade: (tradeId: number) => void):  ColumnDe
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link href="#" className="p-2 text-sm flex justify-start gap-2 items-center w-full cursor-pointer">
+              <Link href={route('trades.edit', { trade: row.original.id })} className="p-2 text-sm flex justify-start gap-2 items-center w-full cursor-pointer">
                   <Pencil className="size-4 text-blue-500" />
-                  Visualizar
+                  Editar
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
