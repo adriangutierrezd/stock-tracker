@@ -66,7 +66,15 @@ export default function Overview({ dateRange }: Props) {
         <>
           {data.length > 0 ? (
             <ChartContainer config={chartConfig}>
-              <BarChart accessibilityLayer data={data}>
+              <BarChart
+                margin={{
+                  top: 50,
+                  right: 5,
+                  left: 5,
+                  bottom: 50,
+                }}
+                accessibilityLayer
+                data={data}>
                 <CartesianGrid vertical={false} />
                 <ChartTooltip
                   cursor={false}

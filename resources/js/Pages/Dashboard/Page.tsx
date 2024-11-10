@@ -56,7 +56,7 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                                 id="date"
                                 variant={"outline"}
                                 className={cn(
-                                    "w-[300px] justify-start text-left font-normal",
+                                    "max-w-[300px] w-full justify-start text-left font-normal",
                                     !date && "text-muted-foreground"
                                 )}
                             >
