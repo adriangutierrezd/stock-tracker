@@ -103,8 +103,8 @@ export default function Overview({ dateRange }: Props) {
                   key={item.date}
                   fill={
                     item.amount > 0
-                      ? "hsl(var(--chart-1))"
-                      : "hsl(var(--chart-2))"
+                      ? "hsl(var(--chart-2))"
+                      : "hsl(var(--chart-1))"
                   }
                 />
               ))}
