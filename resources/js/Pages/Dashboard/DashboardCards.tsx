@@ -6,47 +6,61 @@ import {
 } from "@/Components/ui/card"
 import { formatNumber } from "@/lib/utils";
 import { ChartCandlestick, Euro, Percent } from 'lucide-react';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { Skeleton } from "@/Components/ui/skeleton"
-
-
-const fakeData = {
-    totalRevenue: {
-        value: 20334.23,
-        lastMonth: 20.1
-    },
-    profit: {
-        value: 34.4,
-        lastMonth: 2.1
-    },
-    trades: {
-        value: 10,
-        lastMonth: -2.05
-    }
-}
+import { useActiveWalletStore } from "@/stores";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
 
 interface Props {
     readonly dateRange: DateRange
 }
 
-export default function DashboardCards({ dateRange }: Props){
+export default function DashboardCards({ dateRange }: Props) {
 
+    const { toast } = useToast()
+    const [data, setData] = useState<any[]>([])
+    const { activeWallet } = useActiveWalletStore()
     const [isLoading, setIsLoading] = useState<boolean>(true)
 
-    setTimeout(() => {
-        setIsLoading(false)
-    }, 1500)
+    const loadInfo = async () => {
+        try {
+            setIsLoading(true)
 
-    return(
+            const response = await axios.post(route('dashboard.period-results'), {
+                startDate: dateRange.from,
+                endDate: dateRange.to ?? dateRange.from,
+                walletId: activeWallet.id
+            })
+
+            setData(response.data)
+
+        } catch (error) {
+            toast({
+                title: 'Error',
+                description: 'Ha ocurrido un error inesperado',
+                variant: 'destructive'
+            })
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        loadInfo()
+    }, [activeWallet, dateRange])
+
+
+    return (
         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3 mt-4">
             {isLoading ? (
                 <>
-                    <Skeleton className="h-[130px]"  />
-                    <Skeleton className="h-[130px]"  />
-                    <Skeleton className="h-[130px]"  />
+                    <Skeleton className="h-[130px]" />
+                    <Skeleton className="h-[130px]" />
+                    <Skeleton className="h-[130px]" />
                 </>
-            ): (
+            ) : (
                 <>
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -56,10 +70,10 @@ export default function DashboardCards({ dateRange }: Props){
                             <Euro className='size-4 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{formatNumber(fakeData.totalRevenue.value)}$</div>
-                            <p className="text-xs text-muted-foreground">
-                                {fakeData.totalRevenue.lastMonth > 0 ? '+' : ''}{formatNumber(fakeData.totalRevenue.lastMonth)}% desde el último mes
-                            </p>
+                            <div className="text-2xl font-bold">{formatNumber(data.totalProfit)}$</div>
+                            {/* <p className="text-xs text-muted-foreground">
+                                {fakeData.totalRevenue.lastMonth > 0 ? '+' : ''}{formatNumber(data.totalProfit)}% desde el último mes
+                            </p> */}
                         </CardContent>
                     </Card>
                     <Card>
@@ -70,10 +84,10 @@ export default function DashboardCards({ dateRange }: Props){
                             <Percent className='size-4 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{formatNumber(fakeData.profit.value)}%</div>
-                            <p className="text-xs text-muted-foreground">
+                            <div className="text-2xl font-bold">{formatNumber(data.accProfitability)}%</div>
+                            {/* <p className="text-xs text-muted-foreground">
                             {fakeData.profit.lastMonth > 0 ? '+' : ''}{formatNumber(fakeData.profit.lastMonth)}% desde el último mes
-                            </p>
+                            </p> */}
                         </CardContent>
                     </Card>
                     <Card>
@@ -84,15 +98,15 @@ export default function DashboardCards({ dateRange }: Props){
                             <ChartCandlestick className='size-4 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{fakeData.trades.value}</div>
-                            <p className="text-xs text-muted-foreground">
+                            <div className="text-2xl font-bold">{data.totalTrades}</div>
+                            {/* <p className="text-xs text-muted-foreground">
                             {fakeData.trades.lastMonth > 0 ? '+' : ''}{formatNumber(fakeData.trades.lastMonth)}% desde el último mes
-                            </p>
+                            </p> */}
                         </CardContent>
                     </Card>
                 </>
             )}
 
-    </div>
+        </div>
     )
 }

@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/api')->group(function(){
 
         Route::post('/tradesOverview', [DashboardController::class, 'getOverviewInfo'])->name('dashboard.overview-info');
+        Route::post('/periodResults', [DashboardController::class, 'getPeriodResults'])->name('dashboard.period-results');
 
         Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');
         Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');

@@ -48,7 +48,7 @@ export default function Dashboard({ initialDate, endDate }: Props) {
             <Head title="Dashboard" />
             <h1 className='text-2xl/7 font-bold text-primary-foregroun sm:truncate sm:text-3xl sm:tracking-tight'>Dashboard</h1>
 
-            <div className="mt-4 flex items-center justify-end gap-2">
+            <div className="mt-4 flex flex-col sm:flex-row items-end sm:items-center justify-end gap-2">
                 <div className={cn("grid gap-2", '')}>
                     <Popover>
                         <PopoverTrigger asChild>

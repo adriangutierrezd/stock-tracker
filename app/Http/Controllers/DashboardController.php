@@ -49,4 +49,42 @@ class DashboardController extends Controller
         }
     }
 
+    public function getPeriodResults(FetchOverviewInfoRequest $request){
+        try{
+
+            $trades = Trade::with('tradeLines')
+            ->where('status', 'COMPLETED')
+            ->where('wallet_id', $request->walletId)
+            ->whereBetween('date', [$request->startDate, $request->endDate])
+            ->get();
+
+            $returnData = [
+                'totalTrades' => $trades->count(),
+                'totalProfit' => 0,
+                'accProfitability' => 0
+            ];
+
+            $totalInvested = 0;
+            foreach($trades as $trade){
+                $returnData['totalProfit'] += $trade->result;
+                foreach($trade->tradeLines as $tradeLine){
+                    $totalInvested += $tradeLine['commission'];
+                    if($tradeLine['type'] == 'SELL'){
+                        continue;
+                    }
+
+                    $totalInvested += intval($tradeLine['shares']) * floatval($tradeLine['price']);
+                }
+            }
+
+            $returnData['totalInvested'] = round($totalInvested, 2);
+            $returnData['accProfitability'] = round(($returnData['totalProfit']/$totalInvested) * 100, 2);
+
+            return response()->json($returnData);
+
+        }catch(Error $e){
+            return response()->json([], Constants::HTTP_SERVER_ERROR_CODE);
+        }
+    }
+
 }
