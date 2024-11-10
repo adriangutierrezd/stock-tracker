@@ -61,7 +61,7 @@ export const columns = (handleDeleteTrade: (tradeId: number) => void):  ColumnDe
     },
     cell: ({ row }) => {
       const formatted = formatNumber(row.getValue('result'))
-      return <div className="text-left ml-4">{formatted}€</div>
+      return <div className="text-left ml-4">{formatted}$</div>
     },
   },
   {

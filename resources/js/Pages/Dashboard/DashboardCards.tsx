@@ -56,7 +56,7 @@ export default function DashboardCards({ dateRange }: Props){
                             <Euro className='size-4 text-muted-foreground' />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{formatNumber(fakeData.totalRevenue.value)}€</div>
+                            <div className="text-2xl font-bold">{formatNumber(fakeData.totalRevenue.value)}$</div>
                             <p className="text-xs text-muted-foreground">
                                 {fakeData.totalRevenue.lastMonth > 0 ? '+' : ''}{formatNumber(fakeData.totalRevenue.lastMonth)}% desde el último mes
                             </p>

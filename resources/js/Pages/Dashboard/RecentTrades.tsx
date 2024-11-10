@@ -61,7 +61,7 @@ export default function RecentTrades() {
                                 trade.result && trade.result > 0 ? 'text-emerald-500 bg-emerald-100/60 dark:text-emerald-800 dark:bg-emerald-300' : 'text-red-500 bg-red-100/60 dark:text-red-800 dark:bg-red-300',
 
                             )}>
-                                {formatNumber(trade.result ?? 0)}€
+                                {formatNumber(trade.result ?? 0)}$
                             </span>
                         </div>
                     ))}
