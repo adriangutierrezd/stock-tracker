@@ -391,7 +391,7 @@ const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
                             <Label>Precio (unitario)</Label>
                             <Input
                                 type="number"
-                                step="0.01"
+                                step="0.001"
                                 min="0"
                                 name="price"
                                 value={tradeLine.price}
@@ -403,7 +403,7 @@ const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
                             <Label>Comisión</Label>
                             <Input
                                 type="number"
-                                step="0.01"
+                                step="0.001"
                                 min="0"
                                 name="commission"
                                 value={tradeLine.commission}
