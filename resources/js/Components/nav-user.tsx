@@ -11,19 +11,32 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/Components/ui/dropdown-menu"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
+} from "@/Components/ui/sidebar"
 import { User } from "@/types"
-import { Link } from "@inertiajs/react"
+import { Button } from "./ui/button"
+import { router } from "@inertiajs/react"
+import { useActiveWalletStore } from "@/stores"
+import useWalletsStorage from "@/stores/useWalletsStore"
 
 export function NavUser({user}: { readonly user: User }) {
 
   const { isMobile } = useSidebar()
+  const { setWallets } = useWalletsStorage()
+  const { setActiveWallet } = useActiveWalletStore()
+
+  const handleLogOut = () => {
+    setActiveWallet(null)
+    setWallets([])
+    window.localStorage.removeItem('active-wallet-storage')
+    window.localStorage.removeItem('wallets-storage')
+    router.post(route('logout'))
+  }
 
   return (
     <SidebarMenu>
@@ -86,11 +99,9 @@ export function NavUser({user}: { readonly user: User }) {
               </DropdownMenuItem> */}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link className="w-full" href={route('logout')} method="post" as="button" type="button">
-                <LogOut />
-                Log out
-              </Link>
+            <DropdownMenuItem onClick={handleLogOut}>
+              <LogOut />
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

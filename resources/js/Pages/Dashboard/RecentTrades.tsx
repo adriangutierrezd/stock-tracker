@@ -20,6 +20,9 @@ export default function RecentTrades({ dateRange }: Props) {
     const [recentTrades, setRecentTrades] = useState<Trade[]>([])
 
     const fetchRecentTrades = async () => {
+        if(!activeWallet){
+            return
+        }
         const response = await axios.post(route('trades.get'), {
             walletId: activeWallet.id ?? 0,
             status: 'COMPLETED',
