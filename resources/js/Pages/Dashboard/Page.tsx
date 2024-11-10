@@ -19,7 +19,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/Components/ui/popover"
-import React from 'react';
+import { useState } from 'react';
 import DashboardCards from './DashboardCards';
 import Overview from './Overview';
 
@@ -31,10 +31,17 @@ interface Props {
 
 export default function Dashboard({ initialDate, endDate }: Props) {
 
-    const [date, setDate] = React.useState<DateRange | undefined>({
+    const defaultDateRange: DateRange = {
         from: initialDate,
         to: endDate
-    })
+    }
+
+    const [date, setDate] = useState<DateRange | undefined>(defaultDateRange)
+    const [dateRange, setDateRange] = useState<DateRange | undefined>(defaultDateRange)
+
+    const handleChangeRange = () => {
+        setDateRange(date)
+    }
 
     return (
         <AuthenticatedLayout >
@@ -81,13 +88,13 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                     </Popover>
                 </div>
 
-                <Button>
+                <Button onClick={handleChangeRange}>
                     <Search className='size-4' />
                 </Button>
             </div>
 
-            {date && (
-                <DashboardCards dateRange={date} />
+            {dateRange && (
+                <DashboardCards dateRange={dateRange} />
             )}
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7 mt-4">
@@ -96,8 +103,8 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                         <CardTitle>Resumen</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                        {date && (
-                            <Overview dateRange={date} />
+                        {dateRange && (
+                            <Overview dateRange={dateRange} />
                         )}
                     </CardContent>
                 </Card>
@@ -106,7 +113,9 @@ export default function Dashboard({ initialDate, endDate }: Props) {
                         <CardTitle>Operaciones recientes</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <RecentTrades />
+                        {dateRange && (
+                            <RecentTrades dateRange={dateRange} />
+                        )}
                     </CardContent>
                 </Card>
             </div>

@@ -29,6 +29,9 @@ Route::middleware('auth')->group(function () {
 
 
     Route::prefix('/api')->group(function(){
+
+        Route::post('/tradesOverview', [DashboardController::class, 'getOverviewInfo'])->name('dashboard.overview-info');
+
         Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');
         Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
         Route::put('/wallet/{wallet}', [WalletController::class, 'update'])->name('wallet.update');

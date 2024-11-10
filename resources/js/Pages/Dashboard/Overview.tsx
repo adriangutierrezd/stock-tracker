@@ -6,65 +6,12 @@ import {
   ChartTooltipContent,
 } from "@/Components/ui/chart"
 import { DateRange } from "react-day-picker"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useActiveWalletStore } from "@/stores"
+import { useToast } from "@/hooks/use-toast"
+import axios from "axios"
 
-export const description = "A bar chart with negative values"
-
-const fakeData = [
-  {
-    date: '1 nov',
-    amount: 200.33,
-  },
-  {
-    date: '2 nov',
-    amount: -34.21
-  },
-  {
-    date: '4 nov',
-    amount: 20.01
-  },
-  {
-    date: '5 nov',
-    amount: -20.01
-  },
-  {
-    date: '6 nov',
-    amount: 2.23
-  },
-  {
-    date: '10 nov',
-    amount: 200.01
-  },
-  {
-    date: '11 nov',
-    amount: -10.01
-  },
-  {
-    date: '14 nov',
-    amount: 23.01
-  },
-  {
-    date: '15 nov',
-    amount: 21.01
-  },
-  {
-    date: '20 nov',
-    amount: -20.01
-  },
-  {
-    date: '21 nov',
-    amount: 20.01
-  },
-  {
-    date: '22 nov',
-    amount: 20.01
-  },
-  {
-    date: '27 nov',
-    amount: 20.01
-  }
-]
 
 interface Props {
   readonly dateRange: DateRange
@@ -78,39 +25,74 @@ const chartConfig = {
 
 export default function Overview({ dateRange }: Props) {
 
+
+  const { toast } = useToast()
+  const [data, setData] = useState<any[]>([])
+  const { activeWallet } = useActiveWalletStore()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  setTimeout(() => {
-    setIsLoading(false)
-  }, 1500)
+  const loadInfo = async () => {
+    try {
+      setIsLoading(true)
+
+      const response = await axios.post(route('dashboard.overview-info'), {
+        startDate: dateRange.from,
+        endDate: dateRange.to ?? dateRange.from,
+        walletId: activeWallet.id
+      })
+
+      setData(response.data)
+
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Ha ocurrido un error generando el gráfico',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadInfo()
+  }, [activeWallet, dateRange])
 
   return (
     <>
       {isLoading ? (
-        <Skeleton className="h-fit w-fit" />
+        <Skeleton className="h-[300px] w-full" />
       ) : (
-        <ChartContainer config={chartConfig}>
-          <BarChart accessibilityLayer data={fakeData}>
-            <CartesianGrid vertical={false} />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel hideIndicator />}
-            />
-            <Bar dataKey="amount">
-              <LabelList position="top" dataKey="date" fillOpacity={1} />
-              {fakeData.map((item) => (
-                <Cell
-                  key={item.date}
-                  fill={
-                    item.amount > 0
-                      ? "hsl(var(--chart-2))"
-                      : "hsl(var(--chart-1))"
-                  }
+        <>
+          {data.length > 0 ? (
+            <ChartContainer config={chartConfig}>
+              <BarChart accessibilityLayer data={data}>
+                <CartesianGrid vertical={false} />
+                <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent hideLabel hideIndicator />}
                 />
-              ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+                <Bar dataKey="amount">
+                  <LabelList position="top" dataKey="date" fillOpacity={1} />
+                  {data.map((item) => (
+                    <Cell
+                      key={item.date}
+                      fill={
+                        item.amount > 0
+                          ? "hsl(var(--chart-2))"
+                          : "hsl(var(--chart-1))"
+                      }
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ChartContainer>
+          ) : (
+            <div className="flex items-center justify-center">
+              No hay datos
+            </div>
+          )}
+        </>
       )}
     </>
 

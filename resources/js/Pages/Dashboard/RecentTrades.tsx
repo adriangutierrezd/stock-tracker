@@ -8,9 +8,13 @@ import { useEffect, useState } from "react"
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Link } from "@inertiajs/react"
+import { DateRange } from "react-day-picker"
 
+interface Props {
+    readonly dateRange: DateRange
+  }
 
-export default function RecentTrades() {
+export default function RecentTrades({ dateRange }: Props) {
 
     const {activeWallet} = useActiveWalletStore()
     const [recentTrades, setRecentTrades] = useState<Trade[]>([])
@@ -18,7 +22,9 @@ export default function RecentTrades() {
     const fetchRecentTrades = async () => {
         const response = await axios.post(route('trades.get'), {
             walletId: activeWallet.id ?? 0,
-            status: 'COMPLETED'
+            status: 'COMPLETED',
+            startDate: dateRange.from,
+            endDate: dateRange.to ?? dateRange.from
         })
 
         setRecentTrades(response.data)
