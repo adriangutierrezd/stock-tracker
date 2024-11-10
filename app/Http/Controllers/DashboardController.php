@@ -78,7 +78,7 @@ class DashboardController extends Controller
             }
 
             $returnData['totalInvested'] = round($totalInvested, 2);
-            $returnData['accProfitability'] = round(($returnData['totalProfit']/$totalInvested) * 100, 2);
+            $returnData['accProfitability'] = $totalInvested === 0 ? 0 : round(($returnData['totalProfit']/$totalInvested) * 100, 2);
 
             return response()->json($returnData);
 
