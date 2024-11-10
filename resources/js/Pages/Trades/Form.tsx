@@ -1,4 +1,4 @@
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Trade } from "@/types";
 import { es } from 'date-fns/locale';
@@ -163,6 +163,12 @@ export default function Page({ trade }: Props) {
             <h1 className='text-2xl/7 font-bold text-primary-foregroun sm:truncate sm:text-3xl sm:tracking-tight'>
                 Nuevo trade
             </h1>
+
+            <div className="flex items-center justify-end">
+                <Link className="text-blue-600 hover:underline" href={route('trades.index')}>
+                    Ir a todos los trades
+                </Link>
+            </div>
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 grid grid-cols-12 gap-4">

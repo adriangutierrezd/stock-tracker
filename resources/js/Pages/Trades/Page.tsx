@@ -17,7 +17,7 @@ export default function Page() {
                 <Button variant="outline" asChild>
                     <Link href={route('trades.create')}>
                         <Plus className="size-4" />
-                        Crear
+                        Crear nuevo trade
                     </Link>
                 </Button>
             </div>
