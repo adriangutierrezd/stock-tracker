@@ -14,7 +14,7 @@ import { WALLET_ICON_CONVERSION } from "@/constants"
 import DeleteWalletModal from "./DeleteWalletModal"
 import WalletFormDialog from "./WalletFormDialog"
 
-export const columns = (handleDeleteWallet: (walletId: number) => void): ColumnDef<Wallet>[] => [
+export const columns = (handleDeleteWallet: (walletId: number) => void, displayDeleteModal: boolean): ColumnDef<Wallet>[] => [
     {
         accessorKey: "name",
         header: "Nombre",
@@ -48,9 +48,11 @@ export const columns = (handleDeleteWallet: (walletId: number) => void): ColumnD
                         <DropdownMenuItem asChild>
                             <WalletFormDialog wallet={row.original} />
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <DeleteWalletModal handleDeleteWallet={() => { handleDeleteWallet(row.original.id) }} />
-                        </DropdownMenuItem>
+                        {displayDeleteModal && (
+                            <DropdownMenuItem asChild>
+                                <DeleteWalletModal handleDeleteWallet={() => { handleDeleteWallet(row.original.id) }} />
+                            </DropdownMenuItem>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
             )

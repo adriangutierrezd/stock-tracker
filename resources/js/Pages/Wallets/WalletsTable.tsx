@@ -39,9 +39,11 @@ export default function WalletsTable() {
         }
     }
 
+    const displayDeleteModal = wallets.length > 1
+
     return (
         <div className="mx-auto">
-            <DataTable columns={columns(handleDeleteWallet)} data={wallets} />
+            <DataTable columns={columns(handleDeleteWallet, displayDeleteModal)} data={wallets} />
         </div>
     )
 }
