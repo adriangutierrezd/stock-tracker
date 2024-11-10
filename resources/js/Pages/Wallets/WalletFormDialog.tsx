@@ -34,7 +34,7 @@ import { Wallet, WalletIconType } from "@/types"
 import React from 'react';
 import { getErrorMessage } from '@/lib/utils';
 import { useWalletsStore } from '@/stores';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/Components/ui/input';
 
 const getDefaultValues = (wallet: Wallet | undefined) => {
     if(!wallet){

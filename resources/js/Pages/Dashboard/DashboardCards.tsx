@@ -8,19 +8,26 @@ import { formatNumber } from "@/lib/utils";
 import { ChartCandlestick, Euro, Percent } from 'lucide-react';
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
-import { Skeleton } from "@/Components/ui/skeleton"
 import { useActiveWalletStore } from "@/stores";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import { Skeleton } from "@/Components/ui/skeleton";
 
 interface Props {
     readonly dateRange: DateRange
 }
 
+interface PeriodResult {
+    readonly totalProfit: number;
+    readonly accProfitability: number;
+    readonly totalTrades: number;
+}
+
 export default function DashboardCards({ dateRange }: Props) {
 
     const { toast } = useToast()
-    const [data, setData] = useState<any[]>([])
+    const [data, setData] = useState<PeriodResult>({ totalProfit: 0, totalTrades: 0, accProfitability: 0 })
+    // @ts-ignore
     const { activeWallet } = useActiveWalletStore()
     const [isLoading, setIsLoading] = useState<boolean>(true)
 

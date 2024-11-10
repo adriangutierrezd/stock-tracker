@@ -7,7 +7,7 @@ import {
 } from "@/Components/ui/chart"
 import { DateRange } from "react-day-picker"
 import { useEffect, useState } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/Components/ui/skeleton"
 import { useActiveWalletStore } from "@/stores"
 import { useToast } from "@/hooks/use-toast"
 import axios from "axios"
@@ -28,6 +28,7 @@ export default function Overview({ dateRange }: Props) {
 
   const { toast } = useToast()
   const [data, setData] = useState<any[]>([])
+  // @ts-ignore
   const { activeWallet } = useActiveWalletStore()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 

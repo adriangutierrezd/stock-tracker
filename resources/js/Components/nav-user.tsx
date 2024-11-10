@@ -19,7 +19,6 @@ import {
   useSidebar,
 } from "@/Components/ui/sidebar"
 import { User } from "@/types"
-import { Button } from "./ui/button"
 import { router } from "@inertiajs/react"
 import { useActiveWalletStore } from "@/stores"
 import useWalletsStorage from "@/stores/useWalletsStore"
@@ -28,6 +27,7 @@ export function NavUser({user}: { readonly user: User }) {
 
   const { isMobile } = useSidebar()
   const { setWallets } = useWalletsStorage()
+  // @ts-ignore
   const { setActiveWallet } = useActiveWalletStore()
 
   const handleLogOut = () => {

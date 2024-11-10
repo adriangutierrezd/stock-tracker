@@ -25,6 +25,7 @@ export function WalletSwitcher() {
 
   const { isMobile } = useSidebar()
   const { wallets, setWallets } = useWalletsStore()
+  // @ts-ignore
   const { activeWallet, setActiveWallet } = useActiveWalletStore()
 
   React.useEffect(() => {

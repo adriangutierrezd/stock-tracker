@@ -9,6 +9,7 @@ import { useActiveWalletStore } from "@/stores"
 export default function WalletsTable() {
 
     const { toast } = useToast()
+    // @ts-ignore
     const { activeWallet, setActiveWallet } = useActiveWalletStore()
     const { wallets, setWallets } = useWalletsStorage()
 

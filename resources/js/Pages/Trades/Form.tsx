@@ -34,7 +34,7 @@ import { Calendar } from "@/Components/ui/calendar";
 import { Button } from "@/Components/ui/button";
 import { Calendar as CalendarIcon, Plus, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Label } from "@/components/ui/label";
+import { Label } from "@/Components/ui/label";
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
@@ -85,6 +85,7 @@ const getDefaultTrade = (trade: Trade | undefined) => {
     return {
         company: trade.company,
         strategy: trade.strategy,
+        // @ts-ignore
         date: parse(trade.date, 'yyyy-MM-dd', new Date()),
         status: trade.status as string,
         time: trade.time ?? undefined,
@@ -103,6 +104,7 @@ const getDefaultTradeLines = (trade: Trade | undefined) => {
 export default function Page({ trade }: Props) {
 
     const { toast } = useToast()
+    // @ts-ignore
     const { activeWallet } = useActiveWalletStore()
     const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>([])
 

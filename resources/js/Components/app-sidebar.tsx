@@ -8,7 +8,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/Components/ui/sidebar"
 import { usePage } from "@inertiajs/react"
 
 

@@ -7,7 +7,7 @@ import axios from "axios"
 import { useActiveWalletStore } from "@/stores"
 import { useToast } from "@/hooks/use-toast"
 import { getErrorMessage, cn } from "@/lib/utils"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/Components/ui/skeleton"
 import { format, formatDate, subDays } from "date-fns"
 import { Button } from "@/Components/ui/button"
 import { Calendar } from "@/Components/ui/calendar"
@@ -23,6 +23,7 @@ import { es } from 'date-fns/locale';
 export default function TradesTable() {
 
   const { toast } = useToast()
+  // @ts-ignore
   const { activeWallet } = useActiveWalletStore()
   const [trades, setTrades] = useState<Trade[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)

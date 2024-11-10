@@ -16,6 +16,7 @@ interface Props {
 
 export default function RecentTrades({ dateRange }: Props) {
 
+    // @ts-ignore
     const {activeWallet} = useActiveWalletStore()
     const [recentTrades, setRecentTrades] = useState<Trade[]>([])
 
