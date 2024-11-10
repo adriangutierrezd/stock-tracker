@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { Button } from "@/Components/ui/button"
 import {
     Dialog,
@@ -32,9 +32,9 @@ import { Pencil, Plus } from "lucide-react"
 import { WALLET_ICON_CONVERSION } from "@/constants"
 import { Wallet, WalletIconType } from "@/types"
 import React from 'react';
-import { Input } from '@/Components/ui/input';
 import { getErrorMessage } from '@/lib/utils';
 import { useWalletsStore } from '@/stores';
+import { Input } from '@/components/ui/input';
 
 const getDefaultValues = (wallet: Wallet | undefined) => {
     if(!wallet){
@@ -72,11 +72,22 @@ export default function WalletFormDialog({ wallet }: { readonly wallet: Wallet |
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
 
-            let response
+            let response: AxiosResponse
 
             if(wallet){
-                alert('TODO')
-                return
+                response = await axios.put(route('wallet.update', {wallet: wallet.id}), values)
+                if (response.status !== 200) {
+                    throw new Error(response.data.message)
+                }
+
+                setWallets(wallets.map((w) => {
+                    if(w.id == wallet.id){
+                        return response.data.data
+                    }
+
+                    return w
+                }))
+
             }else{
                 response = await axios.post(route('wallet.store'), values);
                 if (response.status !== 201) {

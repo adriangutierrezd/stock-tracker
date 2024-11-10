@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdateWalletRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateWalletRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return Auth::check() && $this->user()->can('update', $this->wallet);
     }
 
     /**
@@ -22,7 +23,9 @@ class UpdateWalletRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'max:15', 'min:3'],
+            'description' => ['nullable', 'max:30'],
+            'icon' => ['required']
         ];
     }
 }

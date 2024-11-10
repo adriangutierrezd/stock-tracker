@@ -23,13 +23,6 @@ class WalletController extends Controller
         return Inertia::render('Wallets/Page');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -55,28 +48,29 @@ class WalletController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Wallet $wallet)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Wallet $wallet)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateWalletRequest $request, Wallet $wallet)
     {
-        //
+        try{
+       
+            $wallet->name = $request->name;
+            $wallet->description = $request->description;
+            $wallet->icon = $request->icon;
+
+            $wallet->update();
+
+            return response()->json([
+                'message' => 'Cartera actualizada con éxito',
+                'data' => new WalletResource($wallet)
+            ], Constants::HTTP_OK_CODE);
+        }catch(Error $e){
+            return response()->json([
+                'message' => Constants::HTTP_SERVER_ERROR_MSG
+            ], Constants::HTTP_SERVER_ERROR_CODE);
+        }
     }
 
     /**
