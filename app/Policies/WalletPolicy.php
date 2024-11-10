@@ -38,7 +38,7 @@ class WalletPolicy
      */
     public function delete(User $user, Wallet $wallet): bool
     {
-        //
+        return $this->walletBelongsToUser($user, $wallet);
     }
 
     /**

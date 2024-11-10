@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Constants;
 use App\Http\Requests\StoreWalletRequest;
 use App\Http\Requests\UpdateWalletRequest;
 use App\Http\Resources\WalletCollection;
 use App\Http\Resources\WalletResource;
 use App\Models\Wallet;
+use App\Policies\WalletPolicy;
 use Error;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -48,8 +50,8 @@ class WalletController extends Controller
             ], 201);
         }catch(Error $e){
             return response()->json([
-                'message' => 'Ha ocurrido un error inesperado'
-            ], 500);
+                'message' => Constants::HTTP_SERVER_ERROR_MSG
+            ], Constants::HTTP_SERVER_ERROR_CODE);
         }
     }
 
@@ -80,9 +82,20 @@ class WalletController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Wallet $wallet)
+    public function destroy(Request $request, Wallet $wallet)
     {
-        //
+        try{
+            if($request->user()->cannot('delete', [$wallet, WalletPolicy::class])){
+                return response()->json(['message' => Constants::HTTP_FORBIDDEN_MSG], Constants::HTTP_FORBIDDEN_CODE);
+            }
+    
+            $wallet->delete();
+            return $this->getWallets($request);
+        }catch(Error $e){
+            return response()->json([
+                'message' => $e->getMessage()
+            ], Constants::HTTP_SERVER_ERROR_CODE);
+        }
     }
 
 
@@ -97,8 +110,8 @@ class WalletController extends Controller
             ], 200);
         }catch(Error $e){
             return response()->json([
-                'message' => 'Ha ocurrido un error inesperado'
-            ], 500);
+                'message' => Constants::HTTP_SERVER_ERROR_MSG
+            ], Constants::HTTP_SERVER_ERROR_CODE);
         }
     }
 }

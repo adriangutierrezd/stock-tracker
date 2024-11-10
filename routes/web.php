@@ -31,6 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('/api')->group(function(){
         Route::get('/wallets', [WalletController::class, 'getWallets'])->name('wallets.get');
         Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
+        Route::delete('/wallet/{wallet}', [WalletController::class, 'destroy'])->name('wallet.destroy');
 
         Route::post('/trades', [TradeController::class, 'getTrades'])->name('trades.get');
         Route::put('/trades/{trade}', [TradeController::class, 'update'])->name('trades.update');
