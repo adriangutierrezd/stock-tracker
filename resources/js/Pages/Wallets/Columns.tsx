@@ -12,7 +12,7 @@ import {
 } from "@/Components/ui/dropdown-menu"
 import { WALLET_ICON_CONVERSION } from "@/constants"
 import DeleteWalletModal from "./DeleteWalletModal"
-import EditWalletModal from "./EditWalletModal"
+import WalletFormDialog from "./WalletFormDialog"
 
 export const columns = (handleDeleteWallet: (walletId: number) => void): ColumnDef<Wallet>[] => [
     {
@@ -46,7 +46,7 @@ export const columns = (handleDeleteWallet: (walletId: number) => void): ColumnD
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                         <DropdownMenuItem asChild>
-                            <EditWalletModal />
+                            <WalletFormDialog wallet={row.original} />
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                             <DeleteWalletModal handleDeleteWallet={() => { handleDeleteWallet(row.original.id) }} />

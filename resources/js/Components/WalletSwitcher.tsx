@@ -17,8 +17,8 @@ import {
 import { Wallet, WalletIconType } from "@/types"
 import { useActiveWalletStore, useWalletsStore } from "@/stores"
 import { WALLET_ICON_CONVERSION } from "@/constants"
-import NewWalletDialog from "./NewWalletDialog";
 import axios from "axios"
+import WalletFormDialog from "@/Pages/Wallets/WalletFormDialog"
 
 
 export function WalletSwitcher() {
@@ -102,7 +102,7 @@ export function WalletSwitcher() {
             })}
             <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 p-2" asChild>
-              <NewWalletDialog />
+              <WalletFormDialog wallet={undefined} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

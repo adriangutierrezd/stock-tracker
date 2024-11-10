@@ -28,18 +28,34 @@ import {
     SelectValue,
 } from "@/Components/ui/select"
 import { useToast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react"
-import { Input } from "./ui/input"
+import { Pencil, Plus } from "lucide-react"
 import { WALLET_ICON_CONVERSION } from "@/constants"
-import { WalletIconType } from "@/types"
+import { Wallet, WalletIconType } from "@/types"
 import React from 'react';
+import { Input } from '@/Components/ui/input';
+import { getErrorMessage } from '@/lib/utils';
 import { useWalletsStore } from '@/stores';
 
-const NewWalletDialog = () => {
+const getDefaultValues = (wallet: Wallet | undefined) => {
+    if(!wallet){
+        return {
+            name: undefined,
+            description: undefined,
+            icon: 'GROWING'
+        }
+    }
+
+    return {
+        name: wallet.name,
+        description: wallet.description ?? undefined,
+        icon: wallet.icon
+    }
+}
+
+export default function WalletFormDialog({ wallet }: { readonly wallet: Wallet | undefined }) {
 
     const { toast } = useToast()
     const {wallets, setWallets} = useWalletsStore()
-
     const [open, setOpen] = React.useState<boolean>(false)
 
     const formSchema = z.object({
@@ -50,21 +66,25 @@ const NewWalletDialog = () => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: undefined,
-            description: undefined,
-            icon: 'GROWING'
-        },
+        defaultValues: getDefaultValues(wallet),
     })
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const response = await axios.post(route('wallet.store'), values);
-            if (response.status !== 201) {
-                throw new Error(response.data.message)
+
+            let response
+
+            if(wallet){
+                alert('TODO')
+                return
+            }else{
+                response = await axios.post(route('wallet.store'), values);
+                if (response.status !== 201) {
+                    throw new Error(response.data.message)
+                }
+                setWallets([...wallets, response.data.data])
             }
 
-            setWallets([...wallets, response.data.data])
             toast({
                 title: 'Correcto!',
                 description: response.data.message,
@@ -74,26 +94,35 @@ const NewWalletDialog = () => {
         } catch (error) {
             toast({
                 title: 'Error',
-                description: error.message,
+                description: getErrorMessage(error),
                 variant: 'destructive'
             })
         }
     }
 
     return (
-        <Dialog open={open}>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button onClick={() => { setOpen(true) }} variant="ghost" className="w-full flex items-center">
-                    <Plus className="size-4" />
-                    Nueva cartera
-                </Button>
+                {wallet ? (
+                    <Button onClick={() => { setOpen(true) }} variant="ghost" className="p-2 text-sm flex justify-start gap-2 items-center w-full">
+                        <Pencil className="size-4 text-blue-500" />
+                        Editar
+                    </Button>
+                ): (
+                    <Button onClick={() => { setOpen(true) }} variant="ghost" className="w-full flex items-center">
+                        <Plus className="size-4" />
+                        Nueva cartera
+                    </Button>
+                )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Detalles de la cartera</DialogTitle>
-                    <DialogDescription>
-                        Puedes crear una nueva cartera de inversión independiente de las que ya tienes registradas.
-                    </DialogDescription>
+                    {!wallet && (
+                        <DialogDescription>
+                            Puedes crear una nueva cartera de inversión independiente de las que ya tienes registradas.
+                        </DialogDescription>
+                    )} 
                 </DialogHeader>
 
                 <Form {...form}>
@@ -161,5 +190,3 @@ const NewWalletDialog = () => {
         </Dialog>
     )
 }
-
-export default NewWalletDialog
