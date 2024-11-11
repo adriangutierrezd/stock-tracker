@@ -37,6 +37,9 @@ class TradeController extends Controller
             ->when($request->startDate && $request->endDate, function ($query) use($request) {
                 $query->whereBetween('date', [$request->startDate, $request->endDate]);
             })
+            ->when($request->limit, function($query) use($request) {
+                $query->limit(min($request->limit, 3));
+            })
             ->orderBy('id', 'desc')
             ->get();
             return response()->json(new TradeCollection($trades), 200);

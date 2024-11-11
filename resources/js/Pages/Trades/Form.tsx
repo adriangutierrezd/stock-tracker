@@ -104,7 +104,6 @@ const getDefaultTradeLines = (trade: Trade | undefined) => {
 export default function Page({ trade }: Props) {
 
     const { toast } = useToast()
-    // @ts-ignore
     const { activeWallet } = useActiveWalletStore()
     const [tradeLines, setTradeLines] = useState<AuxTradeLine[]>([])
 
@@ -132,7 +131,7 @@ export default function Page({ trade }: Props) {
             const payload = {
                 ...values,
                 date: formatDate(values.date, 'yyyy-LL-dd'),
-                walletId: activeWallet.id,
+                walletId: activeWallet?.id,
                 tradeLines
             }
     
@@ -359,9 +358,9 @@ const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
         <>
             {tradeLines.map((tradeLine) => {
                 return (
-                    <div key={tradeLine.id} className="grid grid-cols-9 gap-2">
+                    <div key={tradeLine.id} className="grid grid-cols-8 sm:grid-cols-9 gap-2">
 
-                        <div className="col-span-2">
+                        <div className="col-span-4 sm:col-span-2">
                             <Label>Tipo de orden</Label>
                             <Select value={tradeLine.type} 
                             onValueChange={(value) => { handleFieldChange({ id: tradeLine.id, key: 'type', value }) }}>
@@ -375,7 +374,7 @@ const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
                             </Select>
                         </div>
 
-                        <div className="col-span-2">
+                        <div className="col-span-4 sm:col-span-2">
                             <Label>Nº Acciones</Label>
                             <Input
                                 type="number"
@@ -387,7 +386,7 @@ const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
                             />
                         </div>
 
-                        <div className="col-span-2">
+                        <div className="col-span-4 sm:col-span-2">
                             <Label>Precio (unitario)</Label>
                             <Input
                                 type="number"
@@ -399,7 +398,7 @@ const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
                             />
                         </div>
 
-                        <div className="col-span-2">
+                        <div className="col-span-4 sm:col-span-2">
                             <Label>Comisión</Label>
                             <Input
                                 type="number"
@@ -411,7 +410,7 @@ const TradeLinesForm = ({ handleUpdateTrades, trade }: TradeLineProps) => {
                             />
                         </div>
 
-                        <Button onClick={() => { handleDeleteTrade(tradeLine.id) }} type="button" variant="outline" className="self-end">
+                        <Button onClick={() => { handleDeleteTrade(tradeLine.id) }} type="button" variant="outline" className="col-span-full sm:col-span-1 self-end">
                             <Trash className="size-4 text-red-500" />
                         </Button>
                     </div>

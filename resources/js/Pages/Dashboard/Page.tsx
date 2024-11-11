@@ -6,22 +6,13 @@ import {
     CardHeader,
     CardTitle,
 } from "@/Components/ui/card"
-import { Calendar as CalendarIcon, Search } from 'lucide-react';
 import RecentTrades from './RecentTrades';
-import { format } from "date-fns"
 import { DateRange } from "react-day-picker"
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/Components/ui/button"
-import { Calendar } from "@/Components/ui/calendar"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/Components/ui/popover"
 import { useState } from 'react';
 import DashboardCards from './DashboardCards';
 import Overview from './Overview';
+import { useToast } from '@/hooks/use-toast';
+import DateRangePicker from '@/Components/DateRangePicker';
 
 
 interface Props {
@@ -36,10 +27,18 @@ export default function Dashboard({ initialDate, endDate }: Props) {
         to: endDate
     }
 
-    const [date, setDate] = useState<DateRange | undefined>(defaultDateRange)
+    const { toast } = useToast()
     const [dateRange, setDateRange] = useState<DateRange | undefined>(defaultDateRange)
 
-    const handleChangeRange = () => {
+    const handleChangeRange = (date: DateRange | undefined) => {
+        if(!date?.from || !date?.to){
+            toast({
+                title: 'Error',
+                description: 'Selecciona un rango de fechas válido',
+                variant: 'destructive'
+            })
+            return
+        }
         setDateRange(date)
     }
 
@@ -48,50 +47,7 @@ export default function Dashboard({ initialDate, endDate }: Props) {
             <Head title="Dashboard" />
             <h1 className='text-2xl/7 font-bold text-primary-foregroun sm:truncate sm:text-3xl sm:tracking-tight'>Dashboard</h1>
 
-            <div className="mt-4 flex flex-col sm:flex-row items-end sm:items-center justify-end gap-2">
-                <div className={cn("grid gap-2", '')}>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                id="date"
-                                variant={"outline"}
-                                className={cn(
-                                    "max-w-[300px] w-full justify-start text-left font-normal",
-                                    !date && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon />
-                                {date?.from ? (
-                                    date.to ? (
-                                        <>
-                                            {format(date.from, "LLL dd, y")} -{" "}
-                                            {format(date.to, "LLL dd, y")}
-                                        </>
-                                    ) : (
-                                        format(date.from, "LLL dd, y")
-                                    )
-                                ) : (
-                                    <span>Pick a date</span>
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                                initialFocus
-                                mode="range"
-                                defaultMonth={date?.from}
-                                selected={date}
-                                onSelect={setDate}
-                                numberOfMonths={2}
-                            />
-                        </PopoverContent>
-                    </Popover>
-                </div>
-
-                <Button onClick={handleChangeRange}>
-                    <Search className='size-4' />
-                </Button>
-            </div>
+            <DateRangePicker defaultDateRange={defaultDateRange} handleUseValue={handleChangeRange} />
 
             {dateRange && (
                 <DashboardCards dateRange={dateRange} />

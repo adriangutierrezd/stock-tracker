@@ -26,19 +26,21 @@ interface PeriodResult {
 export default function DashboardCards({ dateRange }: Props) {
 
     const { toast } = useToast()
-    const [data, setData] = useState<PeriodResult>({ totalProfit: 0, totalTrades: 0, accProfitability: 0 })
-    // @ts-ignore
     const { activeWallet } = useActiveWalletStore()
     const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [data, setData] = useState<PeriodResult>({ totalProfit: 0, totalTrades: 0, accProfitability: 0 })
 
     const loadInfo = async () => {
+        if(!activeWallet){
+            return
+        }
         try {
             setIsLoading(true)
 
             const response = await axios.post(route('dashboard.period-results'), {
                 startDate: dateRange.from,
                 endDate: dateRange.to ?? dateRange.from,
-                walletId: activeWallet.id
+                walletId: activeWallet?.id
             })
 
             setData(response.data)

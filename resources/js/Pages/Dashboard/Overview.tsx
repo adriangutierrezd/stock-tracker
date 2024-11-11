@@ -28,18 +28,20 @@ export default function Overview({ dateRange }: Props) {
 
   const { toast } = useToast()
   const [data, setData] = useState<any[]>([])
-  // @ts-ignore
   const { activeWallet } = useActiveWalletStore()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const loadInfo = async () => {
+    if(!activeWallet){
+      return
+    }
     try {
       setIsLoading(true)
 
       const response = await axios.post(route('dashboard.overview-info'), {
         startDate: dateRange.from,
         endDate: dateRange.to ?? dateRange.from,
-        walletId: activeWallet.id
+        walletId: activeWallet?.id
       })
 
       setData(response.data)

@@ -25,7 +25,6 @@ export function WalletSwitcher() {
 
   const { isMobile } = useSidebar()
   const { wallets, setWallets } = useWalletsStore()
-  // @ts-ignore
   const { activeWallet, setActiveWallet } = useActiveWalletStore()
 
   React.useEffect(() => {
@@ -43,7 +42,7 @@ export function WalletSwitcher() {
     setWallets(response.data.data)
   }
 
-  const ActiveIconComponent = activeWallet ? WALLET_ICON_CONVERSION[activeWallet.icon as WalletIconType] : null;
+  const ActiveIconComponent = activeWallet ? WALLET_ICON_CONVERSION[activeWallet.icon] : null;
 
   return (
     <SidebarMenu>

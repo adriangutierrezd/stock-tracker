@@ -5,6 +5,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 interface WalletsState {
   wallets: Wallet[];
   setWallets: (wallets: Wallet[]) => void;
+  clearWallets: () => void;
 }
 
 const useWalletsStorage = create<WalletsState>()(
@@ -12,6 +13,7 @@ const useWalletsStorage = create<WalletsState>()(
     (set) => ({
       wallets: [],
       setWallets: (wallets: Wallet[]) => set({ wallets }),
+      clearWallets: () => set({ wallets: [] })
     }),
     {
       name: 'wallets-storage',

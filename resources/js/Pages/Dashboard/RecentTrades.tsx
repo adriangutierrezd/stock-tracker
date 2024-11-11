@@ -16,7 +16,6 @@ interface Props {
 
 export default function RecentTrades({ dateRange }: Props) {
 
-    // @ts-ignore
     const {activeWallet} = useActiveWalletStore()
     const [recentTrades, setRecentTrades] = useState<Trade[]>([])
 
@@ -28,6 +27,7 @@ export default function RecentTrades({ dateRange }: Props) {
             walletId: activeWallet.id ?? 0,
             status: 'COMPLETED',
             startDate: dateRange.from,
+            limit: 3,
             endDate: dateRange.to ?? dateRange.from
         })
 

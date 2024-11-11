@@ -26,15 +26,12 @@ import useWalletsStorage from "@/stores/useWalletsStore"
 export function NavUser({user}: { readonly user: User }) {
 
   const { isMobile } = useSidebar()
-  const { setWallets } = useWalletsStorage()
-  // @ts-ignore
-  const { setActiveWallet } = useActiveWalletStore()
+  const { clearWallets } = useWalletsStorage()
+  const { clearActiveWallet } = useActiveWalletStore()
 
   const handleLogOut = () => {
-    setActiveWallet(null)
-    setWallets([])
-    window.localStorage.removeItem('active-wallet-storage')
-    window.localStorage.removeItem('wallets-storage')
+    clearActiveWallet()
+    clearWallets()
     router.post(route('logout'))
   }
 

@@ -33,7 +33,7 @@ import { WALLET_ICON_CONVERSION } from "@/constants"
 import { Wallet, WalletIconType } from "@/types"
 import React from 'react';
 import { getErrorMessage } from '@/lib/utils';
-import { useWalletsStore } from '@/stores';
+import { useActiveWalletStore, useWalletsStore } from '@/stores';
 import { Input } from '@/Components/ui/input';
 
 const getDefaultValues = (wallet: Wallet | undefined) => {
@@ -57,6 +57,7 @@ export default function WalletFormDialog({ wallet }: { readonly wallet: Wallet |
     const { toast } = useToast()
     const {wallets, setWallets} = useWalletsStore()
     const [open, setOpen] = React.useState<boolean>(false)
+    const { activeWallet, setActiveWallet } = useActiveWalletStore()
 
     const formSchema = z.object({
         name: z.string().min(2).max(15),
@@ -87,6 +88,10 @@ export default function WalletFormDialog({ wallet }: { readonly wallet: Wallet |
 
                     return w
                 }))
+
+                if(activeWallet?.id == wallet.id){
+                    setActiveWallet(response.data.data)
+                }
 
             }else{
                 response = await axios.post(route('wallet.store'), values);

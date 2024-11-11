@@ -95,7 +95,7 @@ export function NavMain() {
         {items.map((item) => (
           <>
             {item.type == 'SINGLE' ? (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={`S_${item.title}`}>
                 <SidebarMenuButton asChild isActive={item.isActive}>
                   <Link href={item.url}>
                     {item.icon && <item.icon />}
@@ -105,7 +105,7 @@ export function NavMain() {
               </SidebarMenuItem>
             ) : (
               <Collapsible
-                key={item.title}
+                key={`C_${item.title}`}
                 asChild
                 defaultOpen={item.isActive}
                 className="group/collapsible"
